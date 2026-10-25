@@ -151,6 +151,10 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .party:hover{background:var(--ubub)}.party:active{transform:scale(.97)}
 .party i{width:12px;height:12px;border-radius:50%;display:inline-block}
 .tap{cursor:pointer}
+.party.picked{border-color:var(--accent);background:var(--accent-soft)}
+.party .num{margin-left:4px;min-width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;display:inline-grid;place-items:center}
+.party.yn{font-size:17px;padding:16px 12px}
+.ghost.small{padding:7px 12px;font-size:13px;margin-top:4px}
 .hint{font-family:var(--sans);font-size:14px;color:var(--muted)}
 .blinkg{fill:#2ECC71;animation:blink .9s steps(1) infinite}
 :root{--sky1:#BBD6EA;--sky2:#E8F0F3;--trees:#A7B897;--walk:#CDC9C0;--hedge:#8CA27B}
@@ -199,6 +203,7 @@ const CATS = {
   abk:  'Abknickende Vorfahrt',
   rvl:  'Rechts vor links',
   ampel:'Ampel & Polizei',
+  fuss:'Fußgänger',
   sonder:'Sonderfälle'
 };
 
@@ -381,6 +386,42 @@ const SC = [
   ex:'Zeichen der Polizei gehen allem vor, auch der Ampel. Brust oder Rücken zu dir heißt Halt – trotz Grün. A sieht den Polizisten von der Seite, das heißt für A: Fahrt frei, obwohl seine Ampel Rot zeigt.',
   tip:'Brust oder Rücken = Halt. Seite = Fahrt.'},
 
+ {id:'fus1',cat:'fuss',title:'Fußgänger quert beim Rechtsabbiegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
+  peds:[{from:[4.6,6.6],pos:[4.6,9.6],to:[4.6,16.3]}],
+  cars:[{id:'du',arm:'S',move:'right'}],order:[['ped'],['du']],
+  ex:'Du bist auf der Vorfahrtstraße – gegenüber Autos hättest du Vorfahrt. Aber der Fußgänger läuft quer über die Straße, in die du einbiegst. Beim Abbiegen musst du ihn durchlassen (§ 9 StVO). Die Vorfahrtstraße ändert daran nichts.',
+  tip:'Beim Abbiegen: Wer die Zielstraße quert, geht vor.'},
+
+ {id:'fus2',cat:'fuss',title:'Fußgänger kommt dir entgegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
+  peds:[{from:[4.6,16.3],pos:[4.6,13.4],to:[4.6,6.6]}],
+  cars:[{id:'du',arm:'S',move:'right'}],order:[['ped'],['du']],
+  ex:'Der Fußgänger quert die Straße, in die du einbiegst – diesmal von der gegenüberliegenden Seite auf dich zu. Die Richtung ist egal: Wer die Zielstraße quert, hat beim Abbiegen Vorrang. Du wartest, bis er auf dem Gehweg ist.',
+  tip:'Egal von welcher Seite: quert er deine Zielstraße, wartest du.'},
+
+ {id:'fus3',cat:'fuss',title:'Fußgänger auf dem Gehweg',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
+  peds:[{from:[4.6,16.1],pos:[6.6,16.1],to:[12,16.1]}],
+  cars:[{id:'du',arm:'S',move:'right'}],order:[['du']],
+  ex:'Der Fußgänger läuft auf dem Gehweg von der Kreuzung weg – er quert die Straße nicht. Damit gibt es keinen Konflikt: Du bist auf der Vorfahrtstraße und darfst abbiegen. Behalte ihn trotzdem im Blick.',
+  tip:'Laufrichtung lesen: längs auf dem Gehweg = kein Konflikt.'},
+
+ {id:'fus4',cat:'fuss',title:'Fußgänger beim Linksabbiegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
+  peds:[{from:[-4.6,16.3],pos:[-4.6,13.2],to:[-4.6,6.6]}],
+  cars:[{id:'du',arm:'S',move:'left'}],order:[['ped'],['du']],
+  ex:'Du biegst links ab, der Fußgänger quert genau die Straße, in die du fährst. Auch beim Linksabbiegen gilt: Er geht vor (§ 9 StVO). Kein Gegenverkehr heißt nicht freie Fahrt.',
+  tip:'Links abbiegen: erst Gegenverkehr, dann Fußgänger in der Zielstraße.'},
+
+ {id:'fus5',cat:'fuss',title:'Zebrastreifen hinter der Kreuzung',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],zebra:'N',
+  peds:[{from:[-5.4,18.6],pos:[-2.2,18.6],to:[5.4,18.6]}],
+  cars:[{id:'du',arm:'S',move:'straight'}],order:[['ped'],['du']],
+  ex:'Hinter der Kreuzung liegt ein Zebrastreifen, und der Fußgänger ist gerade darauf unterwegs. Am Fußgängerüberweg musst du ihn queren lassen (§ 26 StVO). Fahr deshalb gar nicht erst in die Kreuzung ein – sonst stehst du darin und blockierst den Querverkehr.',
+  tip:'Zebrastreifen hinter der Kreuzung: vor der Kreuzung warten.'},
+
+ {id:'fus6',cat:'fuss',title:'Zebrastreifen, Fußgänger ist drüben',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],zebra:'N',
+  peds:[{from:[4.6,18.6],pos:[4.6,21.5],to:[4.6,30]}],
+  cars:[{id:'du',arm:'S',move:'straight'}],order:[['du']],
+  ex:'Der Fußgänger hat den Zebrastreifen schon verlassen und läuft auf dem Gehweg davon. Niemand quert, du bist auf der Vorfahrtstraße – du darfst fahren.',
+  tip:'Am Zebrastreifen zählt: Will jemand queren oder quert er gerade?'},
+
  {id:'son1',cat:'sonder',title:'Ausfahrt vom Parkplatz',arms:'NSE',drive:'E',signs:{},
   cars:[{id:'du',arm:'E',move:'left'},{id:'A',arm:'S',move:'straight'}],
   q:'Du fährst vom Parkplatz und willst links abbiegen. A kommt von links. Wer zuerst?',
@@ -406,7 +447,7 @@ const ARM = {
 const EXIT = {S:{straight:'N',right:'E',left:'W'},N:{straight:'S',right:'W',left:'E'},E:{straight:'W',right:'N',left:'S'},W:{straight:'E',right:'S',left:'N'}};
 const DIR = {N:[0,-1],S:[0,1],E:[1,0],W:[-1,0]};
 const VIEWROT = {S:0,W:-90,N:180,E:90};
-const COLORS = {du:'#D97757',A:'#4A7FD1',B:'#3E9E6E',C:'#8E6BC9'};
+const COLORS = {du:'#D97757',A:'#4A7FD1',B:'#3E9E6E',C:'#8E6BC9',ped:'#9B59D0'};
 
 function signSVG(t){
   switch(t){
@@ -466,6 +507,9 @@ function scene(s, solved){
   let o = `<svg class="scene" viewBox="0 0 300 300" role="img" aria-label="${s.title}">`;
   o += `<rect width="300" height="300" class="grass"/>`;
   const R={N:[120,0,60,120],S:[120,180,60,120],E:[180,120,120,60],W:[0,120,120,60]};
+  const RW={N:[103,0,94,120],S:[103,180,94,120],E:[180,103,120,94],W:[0,103,120,94]};
+  o += `<rect x="103" y="103" width="94" height="94" class="walk"/>`;
+  arms.forEach(a=>{ if(s.drive===a) return; const r=RW[a]; o+=`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" class="walk"/>`; });
   o += `<rect x="120" y="120" width="60" height="60" class="road"/>`;
   arms.forEach(a=>{const r=R[a]; o+=`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" class="${s.drive===a?'drive':'road'}"/>`;});
   if(s.drive){
@@ -486,8 +530,10 @@ function scene(s, solved){
     if(sg.includes('206')||lights[a]) o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="sl"/>`;
     else if(sg.includes('205')) o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="sl dash"/>`;
   });
+  if(s.zebra==='N') for(let x=122;x<178;x+=8.1) o+=`<rect class="zebra" x="${x}" y="79" width="4.3" height="22"/>`;
   s.cars.forEach(c=>{ o+=arrowSVG(c); });
   s.cars.forEach(c=>{ o+=carSVG(c); });
+  (s.peds||[]).forEach(pd=>{ o+=topPed(pd); });
   Object.keys(signs).forEach(a=>{
     const sg=signs[a]; if(!sg.length) return;
     const [x,y]=ARM[a].sign, main=sg.filter(t=>t!=='z')[0];
@@ -499,13 +545,11 @@ function scene(s, solved){
     o += `<g transform="translate(${x},${y})">${lightSVG(lights[a])}</g>`;
     if(s.gp===a) o += `<g transform="translate(${x},${y+24})">${signSVG('720')}</g>`;
   });
-  const PP={E:[198,150],W:[102,150],N:[150,102],S:[150,198]};
-  (s.peds||[]).forEach(a=>{ const p=PP[a]; o+=`<text x="${p[0]}" y="${p[1]+8}" font-size="24" text-anchor="middle">🚶</text>`; });
   if(s.police) o += `<circle cx="150" cy="150" r="13" fill="var(--surface)" opacity=".85"/><text x="150" y="157" font-size="19" text-anchor="middle">👮</text>`;
   if(solved && s.order){
     s.order.forEach((grp,i)=>grp.forEach(id=>{
       let bx,by; const c=s.cars.find(k=>k.id===id);
-      if(id==='ped'&&(s.peds||[]).length){ const p=PP[s.peds[0]]; bx=p[0]+16; by=p[1]-12; }
+      if(id==='ped'&&(s.peds||[]).length){ const p=mapXY(...s.peds[0].pos); bx=p[0]+13; by=p[1]-13; }
       else if(c){ const a=ARM[c.arm]; bx=a.car[0]-a.fwd[0]*30; by=a.car[1]-a.fwd[1]*30; }
       else return;
       o+=`<g class="badge"><circle cx="${bx}" cy="${by}" r="9"/><text x="${bx}" y="${by+4}">${i+1}</text></g>`;
@@ -522,7 +566,58 @@ function rel(s){
   const mo=o=>{const n={};Object.keys(o||{}).forEach(k=>n[m(k)]=o[k]);return n;};
   return {...s, arms:s.arms.split('').map(m).join(''), signs:mo(s.signs), lights:mo(s.lights),
     main:s.main&&s.main.map(m), drive:s.drive&&m(s.drive), gp:s.gp&&m(s.gp),
-    peds:(s.peds||[]).map(m), cars:s.cars.map(c=>({...c,arm:m(c.arm)}))};
+    zebra:s.zebra&&m(s.zebra), peds:s.peds||[], cars:s.cars.map(c=>({...c,arm:m(c.arm)}))};
+}
+
+
+/* ---------- Fußgänger ---------- */
+const SKIN='#E9B48A', HAIR='#4A3426', PANTS='#34384A';
+function personSVG(view){
+  /* Einheit: Höhe 1, Füße bei y=0. view: right | left | toward | away */
+  const shirt=COLORS.ped, w=.085;
+  if(view==='right'||view==='left'){
+    const g=`<path d="M0,-.47 L.14,0 M0,-.47 L-.12,0" stroke="${PANTS}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`+
+      `<path d="M.14,0 h.06" stroke="#222" stroke-width=".05" stroke-linecap="round"/><path d="M-.12,0 h.06" stroke="#222" stroke-width=".05" stroke-linecap="round"/>`+
+      `<path d="M0,-.75 L-.1,-.53" stroke="#6E3FA0" stroke-width=".06" stroke-linecap="round"/>`+
+      `<path d="M0,-.47 L.01,-.79" stroke="${shirt}" stroke-width=".16" stroke-linecap="round"/>`+
+      `<path d="M.01,-.75 L.12,-.54" stroke="${shirt}" stroke-width=".06" stroke-linecap="round"/>`+
+      `<circle cx=".015" cy="-.9" r=".085" fill="${SKIN}"/><path d="M-.07,-.88 A.088,.088 0 0 1 .09,-.95 L.02,-.9 Z" fill="${HAIR}"/>`+
+      `<circle cx=".085" cy="-.885" r=".022" fill="${SKIN}"/>`;
+    return view==='left'?`<g transform="scale(-1,1)">${g}</g>`:g;
+  }
+  let g=`<path d="M-.05,-.47 L-.065,0 M.05,-.47 L.065,0" stroke="${PANTS}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`+
+    `<path d="M-.115,-.75 L-.135,-.5 M.115,-.75 L.135,-.5" stroke="${shirt}" stroke-width=".06" stroke-linecap="round"/>`+
+    `<path d="M0,-.49 L0,-.77" stroke="${shirt}" stroke-width=".22" stroke-linecap="round"/>`;
+  if(view==='toward') g+=`<circle cy="-.9" r=".085" fill="${SKIN}"/><path d="M-.085,-.9 A.085,.085 0 0 1 .085,-.9 Q0,-.95 -.085,-.9Z" fill="${HAIR}"/><circle cx="-.03" cy="-.89" r=".013" fill="#222"/><circle cx=".03" cy="-.89" r=".013" fill="#222"/>`;
+  else g+=`<circle cy="-.9" r=".088" fill="${HAIR}"/>`;
+  return g;
+}
+function pedView(ped){ const dx=ped.to[0]-ped.pos[0], dz=ped.to[1]-ped.pos[1]; return Math.abs(dx)>Math.abs(dz)?(dx>0?'right':'left'):(dz>0?'away':'toward'); }
+function fpPed(ped){
+  const [X,Z]=ped.pos, s=F/Z, h=2.2*s, [x,y]=P(X,Z), col=COLORS.ped;
+  /* Laufweg auf dem Boden: gestrichelt mit Pfeil */
+  const sp=[]; for(let i=0;i<=12;i++){ const t=i/12; sp.push(P(X+(ped.to[0]-X)*t, Z+(ped.to[1]-Z)*t)); }
+  const tip=sp[12], pre=sp[10], d=[tip[0]-pre[0],tip[1]-pre[1]], n=Math.hypot(d[0],d[1])||1, u=[d[0]/n,d[1]/n], b=[tip[0]-u[0]*9,tip[1]-u[1]*9], q=[-u[1],u[0]];
+  const tr=[]; for(let i=0;i<=6;i++){ const t=i/6; tr.push(P(ped.from[0]+(X-ped.from[0])*t, ped.from[1]+(Z-ped.from[1])*t)); }
+  let g=`<polyline points="${tr.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="1.5 4" stroke-linecap="round" opacity=".55"/>`;
+  g+=`<polyline points="${sp.slice(0,-1).map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round"/>`;
+  g+=`<polygon points="${tip[0]},${tip[1]} ${b[0]+q[0]*6},${b[1]+q[1]*6} ${b[0]-q[0]*6},${b[1]-q[1]*6}" fill="${col}"/>`;
+  /* Figur bewegt sich ein Stück in Laufrichtung */
+  const m=P(X+(ped.to[0]-X)*.12, Z+(ped.to[1]-Z)*.12), mdx=(m[0]-x).toFixed(1), mdy=(m[1]-y).toFixed(1);
+  g+=`<g class="tap" data-party="ped"><ellipse cx="${x}" cy="${y}" rx="${.32*s}" ry="${.09*s}" fill="rgba(0,0,0,.22)"/>`+
+     `<g><animateTransform attributeName="transform" type="translate" values="0 0;${mdx} ${mdy}" dur="1.8s" repeatCount="indefinite"/>`+
+     `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${h.toFixed(2)})">${personSVG(pedView(ped))}</g></g>`+
+     bubble(x, y-h-12, {id:'ped'}) + `</g>`;
+  return g;
+}
+function mapXY(X,Z){ return [150+X*8.571, 150-(Z-11.5)*8.571]; }
+function topPed(ped){
+  const [x,y]=mapXY(...ped.pos), [tx,ty]=mapXY(...ped.to), [fx,fy]=mapXY(...ped.from), col=COLORS.ped;
+  const d=[tx-x,ty-y], n=Math.hypot(d[0],d[1])||1, u=[d[0]/n,d[1]/n], b=[tx-u[0]*8,ty-u[1]*8], q=[-u[1],u[0]], ang=Math.atan2(u[1],u[0])*180/Math.PI;
+  return `<path d="M${fx},${fy}L${x},${y}" stroke="${col}" stroke-width="2" stroke-dasharray="1.5 3.5" stroke-linecap="round" opacity=".55"/>`+
+    `<path d="M${x},${y}L${b[0]},${b[1]}" stroke="${col}" stroke-width="2.6" stroke-dasharray="5 3.5"/>`+
+    `<polygon points="${tx},${ty} ${b[0]+q[0]*5},${b[1]+q[1]*5} ${b[0]-q[0]*5},${b[1]-q[1]*5}" fill="${col}"/>`+
+    `<g transform="translate(${x},${y}) rotate(${ang})"><ellipse rx="4" ry="7" fill="${col}" stroke="#fff" stroke-width="1"/><circle cx="1" r="3.4" fill="${HAIR}"/><circle cx="3.6" r="1" fill="${SKIN}"/></g>`;
 }
 
 /* ---------- Fahrersicht (Perspektive) ----------
@@ -553,9 +648,11 @@ function fpArrow(c){
   return `<polyline points="${sp.slice(0,-1).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>`+
     `<polygon points="${tip[0]},${tip[1]} ${b[0]+q[0]*6.5},${b[1]+q[1]*6.5} ${b[0]-q[0]*6.5},${b[1]-q[1]*6.5}" fill="${col}" opacity=".9"/>`;
 }
+let PICKS={};
+function pickBadge(x,y,id){ return PICKS[id]?`<circle cx="${x}" cy="${y}" r="8.5" fill="#1F1E1D" stroke="#fff" stroke-width="1.5"/><text class="clabel" x="${x}" y="${y+3.6}" style="font-size:10.5px">${PICKS[id]}</text>`:''; }
 function bubble(x,y,c){
-  const rtw=c.kind==='rtw', col=rtw?'#D32F2F':COLORS[c.id], t=rtw?'RTW':c.id;
-  return `<circle cx="${x}" cy="${y}" r="${rtw?12:9.5}" fill="${col}" stroke="#fff" stroke-width="1.6"/><text class="clabel" x="${x}" y="${y+3.6}" style="font-size:${rtw?8:10.5}px">${t}</text>`;
+  const rtw=c.kind==='rtw', col=rtw?'#D32F2F':COLORS[c.id], t=rtw?'RTW':c.id==='ped'?'F':c.id;
+  return `<circle cx="${x}" cy="${y}" r="${rtw?12:9.5}" fill="${col}" stroke="#fff" stroke-width="1.6"/><text class="clabel" x="${x}" y="${y+3.6}" style="font-size:${rtw?8:10.5}px">${t}</text>`+pickBadge(x+13,y-8,c.id);
 }
 function sideCar(c,X,Z,dir){
   const s=F/Z, [cx,gy]=P(X,Z), L=4.3*s, rtw=c.kind==='rtw', col=rtw?'#F4F4F1':COLORS[c.id];
@@ -621,30 +718,35 @@ function fpScene(s){
   o+=`<defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient></defs>`;
   o+=`<rect width="400" height="${HZ+1}" fill="url(#skyg)"/><rect y="${HZ}" width="400" height="${300-HZ}" class="grass"/>`;
   o+=`<path d="M0,${HZ+1} V${HZ-5} Q30,${HZ-13} 70,${HZ-6} T150,${HZ-8} T230,${HZ-4} T310,${HZ-10} T400,${HZ-5} V${HZ+1}Z" class="trees"/>`;
-  if(has('N')) o+=quad(-3.5,3.5,15,900,'road');
-  else { const a=P(-14,15.6), b=P(14,15.6), h=F*1.5/15.6; o+=`<rect x="${a[0]}" y="${a[1]-h}" width="${b[0]-a[0]}" height="${h}" rx="4" class="hedge"/>`; }
   const L=has('W')?-140:-3.5, R=has('E')?140:3.5;
+  /* Gehwege (2 m) */
+  if(has('N')) o+=quad(-5.5,5.5,15,900,'walk');
+  o+=quad(has('W')?-140:-5.5, has('E')?140:5.5, 6,17,'walk');
+  if(s.drive!=='S') o+=quad(-5.5,5.5,2.4,8,'walk');
+  if(has('N')) o+=quad(-3.5,3.5,15,900,'road');
+  else { const a=P(-14,17.4), b=P(14,17.4), h=F*1.5/17.4; o+=`<rect x="${a[0]}" y="${a[1]-h}" width="${b[0]-a[0]}" height="${h}" rx="4" class="hedge"/>`; }
   o+=quad(L,R,8,15,'road');
-  if(s.drive==='S'){ o+=quad(-140,140,6.2,8,'walk'); o+=quad(-3.5,3.5,2.4,6.2,'drive'); o+=quad(-3.5,3.5,7.85,8,'curbfp'); }
+  if(s.drive==='S'){ o+=quad(-3.5,3.5,2.4,6,'drive'); o+=quad(-3.5,3.5,7.85,8,'curbfp'); }
   else o+=quad(-3.5,3.5,2.4,8,'road');
   if(s.drive!=='S') for(let z=3;z<7.3;z+=2) o+=quad(-.09,.09,z,z+1,'mkf');
   if(has('N')) for(let z=16.5;z<160;z*=1.3) o+=quad(-.1,.1,z,z*1.13,'mkf');
   for(let x=Math.floor(L/3)*3;x<R;x+=3){ if(x+1.6>-3.7&&x<3.7) continue; o+=quad(x,x+1.6,11.35,11.65,'mkf'); }
   ['S','N','E','W'].forEach(a=>{ if(has(a)&&s.drive!==a) o+=fpStopLine(a,lineType(s,a)); });
+  if(s.zebra==='N') for(let x=-3.3;x<3.4;x+=.95) o+=quad(x,x+.5,17.3,19.9,'mkf');
   s.cars.forEach(c=>{ o+=fpArrow(c); });
-  const byZ={N:16.6,E:13.25,W:9.75};
-  s.cars.filter(c=>c.id!=='du').sort((a,b)=>byZ[b.arm]-byZ[a.arm]).forEach(c=>{
-    o+=`<g class="tap" data-party="${c.id}">`;
-    if(c.arm==='N') o+=frontCar(c,-1.75,16.6);
-    else if(c.arm==='E') o+=sideCar(c,5.9,13.25,-1);
-    else if(c.arm==='W') o+=sideCar(c,-5.9,9.75,1);
-    o+=`</g>`;
-  });
-  (s.peds||[]).forEach(a=>{ const X=a==='E'?5.4:a==='W'?-5.4:0, Z=11.5, p=P(X,Z); o+=`<text class="tap" data-party="ped" x="${p[0]}" y="${p[1]}" font-size="${(1.8*F/Z).toFixed(1)}" text-anchor="middle">🚶</text>`; });
+  const byZ={N:16.6,E:13.25,W:9.75}, items=[];
+  s.cars.filter(c=>c.id!=='du').forEach(c=>items.push([byZ[c.arm],()=>{
+    let g=`<g class="tap" data-party="${c.id}">`;
+    if(c.arm==='N') g+=frontCar(c,-1.75,16.6);
+    else if(c.arm==='E') g+=sideCar(c,5.9,13.25,-1);
+    else if(c.arm==='W') g+=sideCar(c,-5.9,9.75,1);
+    return g+`</g>`; }]));
+  (s.peds||[]).forEach(pd=>items.push([pd.pos[1],()=>fpPed(pd)]));
+  items.sort((a,b)=>b[0]-a[0]).forEach(it=>{ o+=it[1](); });
   if(s.police){ const p=P(0,11.5); o+=`<text x="${p[0]}" y="${p[1]}" font-size="${(1.9*F/11.5).toFixed(1)}" text-anchor="middle">👮</text>`; }
   o+=postStack(s);
   o+=`<path class="tap" data-party="du" d="M-10,300 V285 Q200,256 410,285 V300Z" fill="${COLORS.du}"/><path d="M70,281 Q200,263 330,281" stroke="rgba(255,255,255,.32)" stroke-width="2" fill="none"/>`;
-  o+=`<text class="clabel" x="200" y="290" style="font-size:11px">Du</text>`;
+  o+=`<text class="clabel" x="200" y="290" style="font-size:11px">Du</text>`+pickBadge(222,285,'du');
   if(du.move==='left')  o+=`<path class="blinkg" d="M24,284 l11,-8 v4.5 h11 v7 h-11 v4.5z"/>`;
   if(du.move==='right') o+=`<path class="blinkg" d="M376,284 l-11,-8 v4.5 h-11 v7 h11 v4.5z"/>`;
   return o+`</svg>`;
@@ -707,6 +809,7 @@ function welcome(){
       <button class="chip" data-mode="all">🚦 Alle Situationen</button>
       <button class="chip" data-mode="vs">🔶 Vorfahrtstraße</button>
       <button class="chip" data-mode="abk">↪️ Abknickende Vorfahrt</button>
+      <button class="chip" data-mode="fuss">🚶 Fußgänger</button>
       <button class="chip" data-mode="sonder">🅿️ Sonderfälle</button>
       <button class="chip" data-act="sheet">📋 Spickzettel</button>
     </div></div>`;
@@ -728,40 +831,66 @@ function start(mode){
   next();
 }
 
+function partyList(s){ return ['du', ...s.cars.filter(c=>c.id!=='du').map(c=>c.id), ...((s.peds||[]).length?['ped']:[])]; }
+function partyLabel(s,p){ if(p==='du') return 'Du'; if(p==='ped') return 'Fußgänger'; const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'Rettungswagen':p; }
+function partyColor(s,p){ const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'#D32F2F':(COLORS[p]||'#888'); }
+function fmtOrder(s){ return s.order.map(g=>g.length>1?g.map(p=>partyLabel(s,p)).join(' + ')+' (gleichzeitig)':partyLabel(s,g[0])).join(' → '); }
+function duFirst(s){ return s.order[0].length===1 && s.order[0][0]==='du'; }
+
 function next(){
   if(state.idx>=state.queue.length){ finish(); return; }
   setProgress();
-  const s = SC.find(x=>x.id===state.queue[state.idx]); state.cur=s; state.rel=rel(s);
+  const s = SC.find(x=>x.id===state.queue[state.idx]); state.cur=s; state.rel=rel(s); state.phase='yn'; PICKS={};
   const m = addAI(`<div class="label">${CATS[s.cat]}</div>
     <div class="card"><div class="sc">${fpScene(state.rel)}</div>
     <div class="legend"><span>Deine Sicht – lies dein Schild</span><span>Pfeile = geplante Richtung</span><span>Blinker blinkt</span></div></div>
-    ${s.hint?`<p class="hint">${esc(s.hint)}</p>`:''}<p><b>Wer darf zuerst fahren?</b></p>`);
+    ${s.hint?`<p class="hint">${esc(s.hint)}</p>`:''}<p><b>Kannst du einfach fahren?</b></p>`);
   state.cardEl = m.querySelector('.sc');
-  const parties = ['du', ...s.cars.filter(c=>c.id!=='du').map(c=>c.id), ...((s.peds||[]).length?['ped']:[])];
-  const opts = parties.map(p=>[partyLabel(s,p), s.order[0].includes(p)?1:0, p]);
-  cbox.innerHTML = `<div class="chint">Tippe auf eine Partei – oder direkt ins Bild</div><div class="parties">` +
-    opts.map((o,i)=>`<button class="party" data-i="${i}"><i style="background:${partyColor(s,o[2])}"></i>${esc(o[0])}</button>`).join('') + `</div>`;
-  cbox.querySelectorAll('.party').forEach(b=>b.onclick=()=>answer(opts[+b.dataset.i]));
-  state.cardEl.onclick = e => { const t=e.target.closest('[data-party]'); if(!t||!state.cur) return; const o=opts.find(x=>x[2]===t.dataset.party); if(o) answer(o); };
-  state.keyOpts = opts;
+  cbox.innerHTML = `<div class="chint">Hast du gerade freie Fahrt?</div><div class="parties">
+    <button class="party yn" id="yesBtn"><i style="background:var(--ok)"></i>Ja</button>
+    <button class="party yn" id="noBtn"><i style="background:var(--bad)"></i>Nein</button></div>`;
+  $('yesBtn').onclick=()=>answerYN(true); $('noBtn').onclick=()=>answerYN(false);
 }
 
-function partyLabel(s,p){ if(p==='du') return 'Du'; if(p==='ped') return 'Fußgänger'; const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'Rettungswagen':p; }
-function partyColor(s,p){ if(p==='ped') return '#8A8780'; const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'#D32F2F':(COLORS[p]||'#888'); }
-function answer(o){
-  const s=state.cur; if(!s) return;
-  state.cur=null; state.keyOpts=null;
+function answerYN(yes){
+  const s=state.cur; if(!s||state.phase!=='yn') return;
+  addUser(yes?'Ja':'Nein');
+  const first=duFirst(s);
+  if(yes!==first){ finishSit(false, first?'Doch – hier darfst du einfach fahren.':'Nein – du musst hier warten.'); return; }
+  if(first){ finishSit(true,'Richtig – du hast freie Fahrt.'); return; }
+  if(partyList(s).length<=2){ finishSit(true,'Richtig – du musst warten.'); return; }
+  state.phase='order';
+  addAI(`<div class="verdict ok">✓ Richtig, du musst warten</div><p><b>Wer fährt wann?</b> Wähl die richtige Reihenfolge.</p>`);
+  orderUI();
+}
+
+function perms(a){ if(a.length<=1) return [a]; const r=[]; a.forEach((x,i)=>perms(a.slice(0,i).concat(a.slice(i+1))).forEach(q=>r.push([x,...q]))); return r; }
+function fitsOrder(s,seq){ let i=0; for(const g of s.order){ const part=seq.slice(i,i+g.length); i+=g.length; if(!g.every(x=>part.includes(x))) return false; } return true; }
+function orderUI(){
+  const s=state.cur;
+  const wrong=shuffle(perms(partyList(s)).filter(q=>!fitsOrder(s,q))).slice(0,3).map(q=>[q.map(x=>partyLabel(s,x)).join(' → '),0]);
+  const opts=shuffle([[fmtOrder(s),1],...wrong]);
+  cbox.innerHTML = `<div class="chint">Wähle die richtige Reihenfolge</div>` + opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o[0])}</span></button>`).join('');
+  cbox.querySelectorAll('.opt').forEach(btn=>btn.onclick=()=>pickOrder(opts[+btn.dataset.i]));
+  state.orderOpts=opts;
+}
+function pickOrder(o){
+  if(!state.cur||state.phase!=='order') return;
   addUser(o[0]);
-  const ok = !!o[1];
+  finishSit(!!o[1], o[1]?'Richtig – Reihenfolge stimmt.':'Reihenfolge nicht ganz.');
+}
+
+function finishSit(ok, head){
+  const s=state.cur; state.cur=null; state.phase='done';
   state.answered++; if(ok) state.right++;
   const st = stats[s.id] || {seen:0,right:0};
   st.seen++; if(ok) st.right++; st.last=ok; stats[s.id]=st; save();
+  PICKS={};
   if(state.cardEl) state.cardEl.innerHTML = fpScene(state.rel) + `<div class="sol-label">Auflösung von oben · ${esc(s.title)}${s.cat==='abk'?'<br>Jedes Zusatzzeichen ist aus Sicht seiner eigenen Zufahrt gezeichnet – deshalb sieht es an jeder Ecke anders aus.':''}</div>` + scene(state.rel,true);
-  const correct = s.order[0].map(p=>partyLabel(s,p)).join(' oder ');
-  addAI(`<div class="verdict ${ok?'ok':'bad'}">${ok?'✓ Richtig':'✗ Nicht ganz'}</div>
-    ${ok?'':`<p>Richtig wäre: <b>${esc(correct)}</b></p>`}
+  addAI(`<div class="verdict ${ok?'ok':'bad'}">${ok?'✓':'✗'} ${esc(head)}</div>
+    ${duFirst(s)?'':`<p>Reihenfolge: <b>${esc(fmtOrder(s))}</b></p>`}
     <p>${esc(s.ex)}</p>
-    ${s.main?`<p style="font-size:14px;color:var(--muted);font-family:var(--sans)">Gelb markiert: Verlauf der Vorfahrtstraße. Zahlen: Reihenfolge.</p>`:`<p style="font-size:14px;color:var(--muted);font-family:var(--sans)">Zahlen im Bild: Reihenfolge.</p>`}
+    <p style="font-size:14px;color:var(--muted);font-family:var(--sans)">${s.main?'Gelb markiert: Verlauf der Vorfahrtstraße. ':''}Zahlen im Bild: Reihenfolge.</p>
     <div class="tip"><b>Merke:</b> ${esc(s.tip)}</div>`);
   if(!ok && !state.retried.has(s.id)){
     state.retried.add(s.id);
@@ -807,6 +936,8 @@ function showSheet(){
     <ul><li>Wer auf der dicken Linie ist, hat Vorrang vor den Nebenstraßen.</li><li>Nebenstraße gegen Nebenstraße: rechts vor links.</li><li>Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt (auch geradeaus!) und kreuzt, wartet.</li><li>Dem Knick folgen = abbiegen: blinken.</li></ul>
     <h3>Abbiegen</h3>
     <ul><li>Linksabbieger lässt den Gegenverkehr durch – auch auf der Vorfahrtstraße und bei Grün.</li><li>Grünpfeil-Schild: erst anhalten, dann vorsichtig abbiegen.</li></ul>
+    <h3>Fußgänger</h3>
+    <ul><li>Beim Abbiegen: Wer die Straße quert, in die du einbiegst, geht vor – egal von welcher Seite.</li><li>Wer nur auf dem Gehweg entlangläuft, quert nicht – kein Konflikt.</li><li>Zebrastreifen: queren lassen. Liegt er hinter der Kreuzung, vor der Kreuzung warten.</li></ul>
     <h3>Du bist immer der Letzte, wenn …</h3>
     <ul><li>du aus einem Grundstück, Parkplatz oder verkehrsberuhigten Bereich kommst,</li><li>du über einen abgesenkten Bordstein fährst,</li><li>Blaulicht + Martinshorn kommt.</li></ul>
     </div>`);
@@ -823,7 +954,9 @@ $('resetBtn').onclick=()=>{ if(confirm('Gesamten Fortschritt löschen?')){ stats
 
 /* Tastatur: 1–4 antworten, Enter = weiter */
 document.addEventListener('keydown',e=>{
-  if(state.keyOpts && /^[1-5]$/.test(e.key)){ const o=state.keyOpts[+e.key-1]; if(o) answer(o); }
+  if(state.phase==='yn' && /^[jJ]$/.test(e.key)) answerYN(true);
+  else if(state.phase==='yn' && /^[nN]$/.test(e.key)) answerYN(false);
+  else if(state.phase==='order' && /^[1-4]$/.test(e.key)){ const o=(state.orderOpts||[])[+e.key-1]; if(o) pickOrder(o); }
   else if(e.key==='Enter'){ const b=$('nextBtn'); if(b) b.click(); }
 });
 
