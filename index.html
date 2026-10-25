@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FAF9F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#262624" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vorfahrt">
+<title>Vorfahrt-Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF9F5;--side:#F3F1EA;--surface:#FFFFFF;--text:#1F1E1D;--muted:#6F6D66;--border:#E6E3DA;
+  --accent:#C96442;--accent-h:#B4553A;--accent-soft:#F6E9E2;--ubub:#EFECE3;
+  --ok:#2F7D4F;--ok-soft:#E4F1E8;--bad:#B5413A;--bad-soft:#F8E5E2;
+  --grass:#DCE2CE;--road:#7A7772;--drive:#A4A19A;--mark:#FAFAF7;--badge:#1F1E1D;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.06);
+  --serif:"Source Serif 4",ui-serif,Georgia,serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#262624;--side:#1F1E1D;--surface:#30302E;--text:#F3F1EA;--muted:#A6A39A;--border:#3E3D3A;
+  --accent:#D97757;--accent-h:#E58A6B;--accent-soft:#3D2E28;--ubub:#3A3936;
+  --ok:#6CC28F;--ok-soft:#24352A;--bad:#E8867C;--bad-soft:#3E2826;
+  --grass:#323A2E;--road:#55534F;--drive:#6B6964;--mark:#E9E8E2;--badge:#F3F1EA;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  --bg:#262624;--side:#1F1E1D;--surface:#30302E;--text:#F3F1EA;--muted:#A6A39A;--border:#3E3D3A;
+  --accent:#D97757;--accent-h:#E58A6B;--accent-soft:#3D2E28;--ubub:#3A3936;
+  --ok:#6CC28F;--ok-soft:#24352A;--bad:#E8867C;--bad-soft:#3E2826;
+  --grass:#323A2E;--road:#55534F;--drive:#6B6964;--mark:#E9E8E2;--badge:#F3F1EA;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.app{display:flex;height:100dvh}
+
+/* Sidebar */
+.side{width:272px;flex-shrink:0;background:var(--side);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:12px 10px;gap:2px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:9px;padding:6px 8px 12px;font-family:var(--serif);font-size:19px;font-weight:600}
+.brand svg{width:24px;height:24px;color:var(--accent)}
+.newbtn{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;border:0;background:transparent;font-weight:500;text-align:left}
+.newbtn .plus{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:17px;line-height:1}
+.newbtn:hover,.navbtn:hover{background:rgba(0,0,0,.05)}
+:root[data-theme="dark"] .newbtn:hover,:root[data-theme="dark"] .navbtn:hover{background:rgba(255,255,255,.06)}
+@media (prefers-color-scheme:dark){.newbtn:hover,.navbtn:hover{background:rgba(255,255,255,.06)}}
+.sec{font-size:12px;color:var(--muted);padding:14px 10px 6px;font-weight:500}
+.navbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:8px 10px;border:0;background:transparent;border-radius:9px;text-align:left;font-size:14px}
+.navbtn.active{background:var(--ubub);font-weight:500}
+.navbtn .cnt{font-size:12px;color:var(--muted)}
+.stat{padding:6px 10px}
+.stat .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+.stat .row span:last-child{color:var(--muted)}
+.bar{height:5px;border-radius:9px;background:var(--border);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:9px;transition:width .4s}
+.sidefoot{margin-top:auto;padding:12px 10px 4px;font-size:12px;color:var(--muted);line-height:1.45}
+.linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;padding:0;font-size:12px}
+.scrim{display:none}
+@media (max-width:860px){
+  .side{position:fixed;inset:0 auto 0 0;z-index:40;transform:translateX(-102%);transition:transform .25s ease;box-shadow:var(--shadow);padding-top:calc(12px + env(safe-area-inset-top))}
+  .side.open{transform:none}
+  .scrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:35}
+}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;min-height:52px}
+.iconbtn{width:38px;height:38px;border-radius:10px;border:0;background:transparent;display:grid;place-items:center;color:var(--muted)}
+.iconbtn:hover{background:var(--ubub)}
+.iconbtn svg{width:20px;height:20px}
+.toptitle{flex:1;min-width:0;font-weight:500;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress{font-size:13px;color:var(--muted);padding:4px 10px;border:1px solid var(--border);border-radius:99px;white-space:nowrap}
+.desk-hide{display:none}
+@media (max-width:860px){.desk-hide{display:grid}}
+
+.chat{flex:1;overflow-y:auto;padding:8px 16px 28px;-webkit-overflow-scrolling:touch}
+.inner{max-width:720px;margin:0 auto}
+.msg{margin:20px 0;animation:rise .3s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.ai{display:flex;gap:12px}
+.avatar{width:28px;height:28px;flex-shrink:0;color:var(--accent);margin-top:1px}
+.msg.ai .body{flex:1;min-width:0;font-family:var(--serif);font-size:16.5px;line-height:1.6}
+.msg.ai .body p{margin:0 0 10px}
+.msg.ai .body p:last-child{margin-bottom:0}
+.label{font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-bottom:8px;letter-spacing:.01em}
+.msg.user{display:flex;justify-content:flex-end}
+.bubble{background:var(--ubub);padding:10px 15px;border-radius:18px;max-width:82%;line-height:1.45}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin:2px 0 14px}
+.card .scene{display:block;width:100%;max-width:440px;height:auto;margin:0 auto}
+.legend{font-family:var(--sans);font-size:12px;color:var(--muted);padding:8px 14px 10px;border-top:1px solid var(--border);display:flex;gap:14px;flex-wrap:wrap}
+.verdict{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-weight:600;font-size:14px;padding:5px 11px;border-radius:99px;margin-bottom:10px}
+.verdict.ok{background:var(--ok-soft);color:var(--ok)}
+.verdict.bad{background:var(--bad-soft);color:var(--bad)}
+.tip{font-family:var(--sans);font-size:14px;background:var(--accent-soft);border-radius:12px;padding:10px 13px;margin-top:12px;line-height:1.45}
+.tip b{color:var(--accent)}
+.sheet h3{font-family:var(--serif);font-size:17px;margin:18px 0 6px;font-weight:600}
+.sheet h3:first-child{margin-top:0}
+.sheet ol,.sheet ul{margin:0 0 8px;padding-left:22px}
+.sheet li{margin:3px 0}
+.signrow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:15.5px}
+.signrow svg{width:30px;height:30px;flex-shrink:0}
+
+/* Welcome */
+.welcome{min-height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px 4px 40px}
+.welcome .mark{width:44px;height:44px;color:var(--accent);margin-bottom:14px}
+.welcome h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,6vw,38px);line-height:1.15;margin:0 0 10px;letter-spacing:-.01em}
+.welcome p{color:var(--muted);margin:0 0 26px;max-width:460px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:560px}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:9px 13px;font-size:14px;display:inline-flex;gap:7px;align-items:center}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Composer */
+.composer{padding:6px 16px calc(12px + env(safe-area-inset-bottom))}
+.cbox{max-width:720px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:8px}
+.cbox:empty{display:none}
+.chint{font-size:12.5px;color:var(--muted);padding:4px 8px 2px}
+.opt{display:flex;width:100%;text-align:left;gap:11px;align-items:center;padding:11px 12px;border:1px solid transparent;border-radius:14px;background:transparent;margin:2px 0;line-height:1.35}
+.opt:hover{background:var(--ubub)}
+.opt:active{transform:scale(.99)}
+.opt .k{width:24px;height:24px;flex-shrink:0;border-radius:7px;border:1px solid var(--border);display:grid;place-items:center;font-size:12px;color:var(--muted);font-weight:500}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.primary{background:var(--accent);color:#fff;border:0;border-radius:14px;padding:11px 18px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.primary:hover{background:var(--accent-h)}
+.ghost{background:transparent;border:1px solid var(--border);border-radius:14px;padding:11px 16px}
+.ghost:hover{background:var(--ubub)}
+.foot{text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px}
+
+/* SVG scene */
+.grass{fill:var(--grass)}.road{fill:var(--road)}.drive{fill:var(--drive)}
+.cl{stroke:var(--mark);stroke-width:1.6;stroke-dasharray:9 7}
+.sl{stroke:var(--mark);stroke-width:3}
+.sl.dash{stroke-dasharray:4 3;stroke-width:2.6}
+.curb{stroke:var(--mark);stroke-width:2.2;stroke-dasharray:3 3;opacity:.8}
+.zebra{fill:var(--mark)}
+.mainhl{stroke:#F4C20D;stroke-width:56;fill:none;opacity:.38;stroke-linejoin:round}
+.blink{fill:#FFB020;animation:blink .9s steps(1) infinite}
+.blue{fill:#2D7CF6;animation:blink .5s steps(1) infinite}
+.blue.b2{animation-delay:.25s}
+@keyframes blink{50%{opacity:.12}}
+.badge circle{fill:var(--badge)}.badge text{fill:var(--bg);font:700 11px var(--sans);text-anchor:middle}
+.clabel{font:700 10px var(--sans);fill:#fff;text-anchor:middle;pointer-events:none}
+.tlabel{font:500 9px var(--sans);fill:var(--muted);text-anchor:middle}
+.parties{display:flex;flex-wrap:wrap;gap:8px;padding:6px 4px 4px}
+.party{flex:1 1 30%;min-width:96px;display:flex;align-items:center;justify-content:center;gap:9px;padding:14px 12px;border:1px solid var(--border);border-radius:14px;background:transparent;font-weight:600;font-size:16px}
+.party:hover{background:var(--ubub)}.party:active{transform:scale(.97)}
+.party i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.tap{cursor:pointer}
+.hint{font-family:var(--sans);font-size:14px;color:var(--muted)}
+.blinkg{fill:#2ECC71;animation:blink .9s steps(1) infinite}
+:root{--sky1:#BBD6EA;--sky2:#E8F0F3;--trees:#A7B897;--walk:#CDC9C0;--hedge:#8CA27B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sky1:#1C2632;--sky2:#323E48;--trees:#2A3326;--walk:#5E5C57;--hedge:#2F3B2A}}
+:root[data-theme="dark"]{--sky1:#1C2632;--sky2:#323E48;--trees:#2A3326;--walk:#5E5C57;--hedge:#2F3B2A}
+.trees{fill:var(--trees)}.walk{fill:var(--walk)}.hedge{fill:var(--hedge)}.mkf{fill:var(--mark)}.curbfp{fill:var(--mark);opacity:.7}
+.card .scene.fp{max-width:560px}
+.sol-label{font-family:var(--sans);font-size:12.5px;color:var(--muted);padding:9px 14px 4px;border-top:1px solid var(--border)}
+@media (prefers-reduced-motion:reduce){.blink,.blinkg,.blue,.msg{animation:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand"><span id="brandIcon"></span>Vorfahrt-Coach</div>
+    <button class="newbtn" id="newBtn"><span class="plus">+</span>Neues Training</button>
+    <div class="sec">Kategorien</div>
+    <nav id="nav"></nav>
+    <div class="sec">Dein Stand</div>
+    <div id="stats"></div>
+    <div class="sec">Hilfe</div>
+    <button class="navbtn" id="sheetBtn">Spickzettel: Wer hat Vorfahrt?</button>
+    <div class="sidefoot">Fortschritt wird nur in diesem Browser gespeichert.<br><button class="linkbtn" id="resetBtn">Fortschritt zurücksetzen</button></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <main class="main">
+    <header class="top">
+      <button class="iconbtn desk-hide" id="menuBtn" aria-label="Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+      <div class="toptitle" id="topTitle">Vorfahrt-Coach</div>
+      <span class="progress" id="progress" hidden></span>
+      <button class="iconbtn desk-hide" id="newBtn2" aria-label="Neues Training"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+    </header>
+    <div class="chat" id="chat"><div class="inner" id="inner"></div></div>
+    <div class="composer"><div class="cbox" id="cbox"></div><div class="foot">Lernhilfe – ersetzt keine Fahrstunde. Im Zweifel gilt die StVO.</div></div>
+  </main>
+</div>
+
+<script>
+/* ---------- Icon (Lenkrad) ---------- */
+const WHEEL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M3.6 10.2c2.6-.9 5.4-1.3 8.4-1.3s5.8.4 8.4 1.3M10.4 13.8 7 20M13.6 13.8 17 20"/></svg>`;
+document.getElementById('brandIcon').innerHTML = WHEEL;
+
+/* ---------- Kategorien ---------- */
+const CATS = {
+  vs:   'Vorfahrtstraße & Schilder',
+  abk:  'Abknickende Vorfahrt',
+  rvl:  'Rechts vor links',
+  ampel:'Ampel & Polizei',
+  sonder:'Sonderfälle'
+};
+
+/* ---------- Situationen ----------
+   arms: vorhandene Straßen (N/E/S/W), signs: Schilder je Zufahrt ('z' = Zusatzzeichen abknickende Vorfahrt),
+   main: Verlauf der Vorfahrtstraße (für die Auflösung), cars: arm + move (straight/left/right),
+   order: Auflösung in Gruppen (gleiche Gruppe = gleichzeitig). */
+const SC = [
+ {id:'vs1',cat:'vs',title:'Vorfahrt gewähren',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst geradeaus über die Kreuzung. Wer fährt zuerst?',
+  opts:[['A',1],['Du – A kommt doch von links',0],['Wer zuerst an der Kreuzung ist',0]],order:[['A'],['du']],
+  ex:'Vor dir steht „Vorfahrt gewähren“ (Zeichen 205), A fährt auf der Vorfahrtstraße (Zeichen 306). Also wartest du – egal, ob A von links oder rechts kommt. Rechts vor links spielt keine Rolle, sobald Schilder die Vorfahrt regeln.',
+  tip:'Erst das Schild suchen, dann die Autos anschauen.'},
+
+ {id:'vs2',cat:'vs',title:'Linksabbiegen auf der Vorfahrtstraße',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
+  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'N',move:'straight'},{id:'B',arm:'E',move:'straight'}],
+  q:'Du willst links abbiegen. In welcher Reihenfolge wird gefahren?',
+  opts:[['A → Du → B',1],['Du → A → B',0],['B → A → Du',0],['A → B → Du',0]],order:[['A'],['du'],['B']],
+  ex:'Du und A seid auf der Vorfahrtstraße, B hat Zeichen 205 und muss euch beide durchlassen. Zwischen euch beiden gilt die Abbiegeregel: Wer links abbiegt, lässt den Gegenverkehr durch (§ 9 StVO). Also erst A, dann du, zuletzt B.',
+  tip:'Vorfahrtstraße heißt nicht: Ich darf immer zuerst. Gegenverkehr geht beim Linksabbiegen vor.'},
+
+ {id:'vs3',cat:'vs',title:'Rechts abbiegen mit 205',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst nur rechts abbiegen. Musst du A durchlassen?',
+  opts:[['Ja, A hat Vorfahrt',1],['Nein, beim Rechtsabbiegen nicht',0],['Nur wenn A blinkt',0]],order:[['A'],['du']],
+  ex:'Zeichen 205 gilt für jede Fahrtrichtung. Beim Rechtsabbiegen fährst du genau in die Spur, auf der A kommt – du würdest A also behindern. A fährt zuerst.',
+  tip:'205 gilt immer – geradeaus, links und rechts.'},
+
+ {id:'vs4',cat:'vs',title:'Stoppschild',arms:'NESW',signs:{S:['206'],N:['206'],W:['306'],E:['306']},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight'}],
+  q:'',opts:[],order:[['A'],['du']],
+  ex:'Zeichen 206: Du hältst an der Haltlinie vollständig an – immer, auch wenn alles frei wirkt. Danach gewährst du Vorfahrt: A ist auf der Vorfahrtstraße und fährt zuerst. Durchrollen ist in der Prüfung ein klassischer Fehler.',
+  tip:'Stopp = Räder stehen. Jedes Mal.'},
+
+ {id:'vs5',cat:'vs',title:'Stoppschild und Rechtsabbiegen',arms:'NESW',signs:{S:['206'],N:['206'],W:['306'],E:['306']},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst rechts abbiegen. Was ist richtig?',
+  opts:[['Anhalten, A durchlassen, dann abbiegen',1],['Ohne Anhalten zügig vor A abbiegen',0],['Kein Halt nötig, weil du nur rechts abbiegst',0]],order:[['A'],['du']],
+  ex:'Am Stoppschild hältst du immer an. Danach gilt dasselbe wie bei 205: A ist auf der Vorfahrtstraße und kommt in die Spur, in die du einbiegst. Also A abwarten.',
+  tip:'Erst stehen, dann schauen, dann fahren.'},
+
+ {id:'vs6',cat:'vs',title:'Zwei Autos auf der Vorfahrtstraße',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'W',move:'straight'},{id:'B',arm:'E',move:'left'}],
+  q:'Du willst links abbiegen. A kommt von links, B von rechts. Reihenfolge?',
+  opts:[['A → B → Du',1],['B → A → Du',0],['A → Du → B',0],['Du → A → B',0]],order:[['A'],['B'],['du']],
+  ex:'A und B haben beide Vorrang vor dir (du hast 205). Untereinander gilt: B biegt links ab und lässt den Gegenverkehr A durch. Also A, dann B, zuletzt du.',
+  tip:'Erst klären, wer auf der Vorfahrtstraße ist. Dann die Abbiegeregeln unter denen anwenden.'},
+
+ {id:'vs7',cat:'vs',title:'Vorfahrt an der nächsten Kreuzung',arms:'NESW',signs:{S:['301'],N:['301'],W:['205'],E:['205']},main:['S','N'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst geradeaus. Wer fährt zuerst?',
+  opts:[['Du',1],['A',0],['Wer zuerst da ist',0]],order:[['du'],['A']],
+  ex:'Zeichen 301 gibt dir Vorfahrt an genau dieser Kreuzung oder Einmündung. A hat „Vorfahrt gewähren“ und wartet. Achtung: 301 gilt nur einmal – an der Kreuzung danach musst du neu schauen.',
+  tip:'301 = Vorfahrt nur an der nächsten Kreuzung. 306 = Vorfahrt bis zum Ende-Schild (307).'},
+
+ {id:'vs8',cat:'vs',title:'301 und Linksabbiegen',arms:'NESW',signs:{S:['301'],N:['301'],W:['205'],E:['205']},main:['S','N'],
+  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'E',move:'straight'},{id:'B',arm:'N',move:'straight'}],
+  q:'Du willst links abbiegen. Reihenfolge?',
+  opts:[['B → Du → A',1],['Du → B → A',0],['A → B → Du',0],['B → A → Du',0]],order:[['B'],['du'],['A']],
+  ex:'A hat 205 und muss warten. Gegenüber B hilft dir dein 301 aber nicht: B kommt dir entgegen und fährt geradeaus, du biegst links ab – also lässt du B durch. Danach du, zuletzt A.',
+  tip:'Linksabbieger lässt Gegenverkehr durch – auch wenn beide Vorfahrt haben.'},
+
+ {id:'vs9',cat:'vs',title:'Verkehr von beiden Seiten',arms:'NESW',signs:{E:['205'],W:['205'],N:['306'],S:['306']},main:['N','S'],
+  cars:[{id:'du',arm:'E',move:'straight'},{id:'A',arm:'S',move:'straight'},{id:'B',arm:'N',move:'right'}],
+  q:'Du willst geradeaus. Wer fährt wann?',
+  opts:[['A und B gleichzeitig, dann du',1],['Du → A → B',0],['B → Du → A',0],['A → Du → B',0]],order:[['A','B'],['du']],
+  ex:'Du hast 205, A und B sind auf der Vorfahrtstraße – du wartest auf beide. A fährt geradeaus, B biegt rechts ab: Die beiden behindern sich nicht und können gleichzeitig fahren. Danach bist du dran.',
+  tip:'Bei 205 nach links UND rechts schauen – du kreuzt beide Fahrspuren.'},
+
+ {id:'abk1',cat:'abk',title:'Abknickende Vorfahrt lesen',arms:'NESW',signs:{N:['306','z'],E:['306','z'],S:['205','z'],W:['205','z']},main:['N','E'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'N',move:'left'},{id:'B',arm:'W',move:'straight'}],
+  q:'Schau aufs Zusatzzeichen. Du willst geradeaus. Reihenfolge?',
+  opts:[['A → Du → B',1],['Du → B → A',0],['B → A → Du',0],['A → B → Du',0]],order:[['A'],['du'],['B']],
+  ex:'Das Zusatzzeichen zeigt die Vorfahrtstraße als dicke Linie: Sie kommt von gegenüber und knickt (aus deiner Sicht) nach rechts ab. A folgt ihr und hat Vorfahrt. Du und B seid beide auf untergeordneten Straßen – untereinander gilt rechts vor links. B kommt von links, also fährst du vor B.',
+  tip:'Nebenstraße gegen Nebenstraße = rechts vor links.'},
+
+ {id:'abk2',cat:'abk',title:'Der Vorfahrt folgen',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
+  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'N',move:'straight'}],
+  q:'Du willst links abbiegen, A kommt dir entgegen und fährt geradeaus. Wer zuerst?',
+  opts:[['Du',1],['A – A kommt dir entgegen und du biegst links ab',0],['A – A fährt geradeaus',0]],order:[['du'],['A']],
+  ex:'Du bleibst auf der Vorfahrtstraße, A kommt aus einer untergeordneten Straße (205). Also fährst du zuerst – die Linksabbieger-Regel gilt hier nicht gegenüber A. Wichtig: Wer der abknickenden Vorfahrt folgt, muss blinken, hier also links.',
+  tip:'Der abknickenden Vorfahrt folgen = blinken!'},
+
+ {id:'abk3',cat:'abk',title:'Zwei Nebenstraßen',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
+  cars:[{id:'du',arm:'N',move:'straight'},{id:'A',arm:'E',move:'straight'}],
+  q:'Du willst geradeaus, A kommt von links. Sonst ist niemand da. Wer zuerst?',
+  opts:[['Du',1],['A',0],['Beide warten, bis einer verzichtet',0]],order:[['du'],['A']],
+  ex:'Ihr beide habt 205 – aber das regelt nur euer Verhältnis zur Vorfahrtstraße. Untereinander gilt rechts vor links. Aus Sicht von A kommst du von rechts, also fährst du zuerst.',
+  tip:'205 heißt nicht automatisch warten – es heißt: Vorfahrtstraße zuerst.'},
+
+ {id:'abk4',cat:'abk',title:'Abknickend mit drei Autos',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
+  cars:[{id:'du',arm:'E',move:'straight'},{id:'A',arm:'S',move:'left'},{id:'B',arm:'N',move:'straight'}],
+  q:'Du willst geradeaus. Reihenfolge?',
+  opts:[['A → B → Du',1],['A → Du → B',0],['B → Du → A',0],['Du → A → B',0]],order:[['A'],['B'],['du']],
+  ex:'A ist auf der Vorfahrtstraße und fährt zuerst. Du und B seid in Nebenstraßen: rechts vor links. B kommt für dich von rechts, also fährt B vor dir.',
+  tip:'Reihenfolge: Vorfahrtstraße → dann rechts vor links bei den Nebenstraßen.'},
+
+ {id:'abk5',cat:'abk',title:'Beide auf der Vorfahrtstraße',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
+  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst links abbiegen. A kommt von links und fährt geradeaus. Wer zuerst?',
+  opts:[['Du',1],['A – du biegst links ab',0],['A – A kommt von links',0]],order:[['du'],['A']],
+  ex:'Ihr seid beide auf der Vorfahrtstraße. Du folgst ihrem Verlauf, A verlässt sie, indem er geradeaus fährt, und kreuzt dabei deinen Weg. Damit gilt A als Abbieger und muss dich durchlassen. Wer dem Knick folgt, hat Vorrang.',
+  tip:'Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt und kreuzt, wartet.'},
+
+ {id:'abk6',cat:'abk',title:'Du verlässt die Vorfahrtstraße',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
+  cars:[{id:'du',arm:'W',move:'straight'},{id:'A',arm:'S',move:'left'}],
+  q:'Du willst geradeaus. A kommt von rechts und biegt links ab. Wer zuerst?',
+  opts:[['A',1],['Du – du fährst geradeaus',0],['Du – A kommt von links',0]],order:[['A'],['du']],
+  ex:'Die Vorfahrtstraße knickt aus deiner Sicht nach rechts ab. Fährst du geradeaus, verlässt du sie und kreuzt dabei den Weg von A, der ihr folgt. Dann giltst du als Abbieger und lässt A durch. Geradeaus fahren heißt hier nicht automatisch Vorrang.',
+  tip:'Geradeaus kann „abbiegen“ sein – entscheidend ist der Verlauf der Vorfahrtstraße.'},
+
+ {id:'abk7',cat:'abk',title:'Abknickend an der Einmündung',arms:'NSW',signs:{S:['306','z'],W:['306','z'],N:['205','z']},main:['S','W'],
+  cars:[{id:'du',arm:'N',move:'straight'},{id:'A',arm:'W',move:'right'}],
+  q:'Einmündung. Du willst geradeaus, A kommt von rechts. Wer zuerst?',
+  opts:[['A',1],['Du – du fährst geradeaus',0],['Gleichzeitig, ihr kreuzt euch nicht',0]],order:[['A'],['du']],
+  ex:'Das Zusatzzeichen zeigt: Die Vorfahrtstraße kommt von rechts und knickt nach vorne ab – genau in die Richtung, in die du willst. A folgt ihr und hat Vorfahrt, du hast 205. Dass du „geradeaus“ fährst, spielt keine Rolle.',
+  tip:'Zusatzzeichen auch an Einmündungen lesen – nicht nur an Kreuzungen.'},
+
+ {id:'abk8',cat:'abk',title:'Knick nach rechts',arms:'NESW',signs:{S:['306','z'],E:['306','z'],N:['205','z'],W:['205','z']},main:['S','E'],
+  cars:[{id:'du',arm:'W',move:'straight'},{id:'A',arm:'S',move:'right'},{id:'B',arm:'N',move:'straight'}],
+  q:'Du willst geradeaus. Reihenfolge?',
+  opts:[['A → Du → B',1],['A → B → Du',0],['Du → A → B',0],['B → Du → A',0]],order:[['A'],['du'],['B']],
+  ex:'Die Vorfahrtstraße kommt von rechts und knickt in deine Fahrtrichtung ab. A folgt ihr und fährt in dieselbe Richtung wie du – A zuerst. Du und B seid in Nebenstraßen: rechts vor links. Für B kommst du von rechts, also fährst du vor B.',
+  tip:'Erst die Vorfahrtstraße, dann rechts vor links unter den Nebenstraßen.'},
+
+ {id:'abk9',cat:'abk',title:'Fußgänger beim Folgen',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],peds:['W'],
+  cars:[{id:'du',arm:'S',move:'left'}],
+  q:'',opts:[],order:[['ped'],['du']],
+  ex:'Wer der abknickenden Vorfahrt folgt, biegt rechtlich ab: Du musst blinken und auf Fußgänger achten, die die Straße queren, in die du einfährst (§ 9 StVO). Die Vorfahrt gilt gegenüber Fahrzeugen, nicht gegenüber diesen Fußgängern.',
+  tip:'Knick folgen = abbiegen: blinken, Schulterblick, Fußgänger.'},
+
+ {id:'rvl1',cat:'rvl',title:'Ungeregelte Kreuzung',arms:'NESW',signs:{},
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight'}],
+  q:'Du willst geradeaus. Wer fährt zuerst?',
+  opts:[['A',1],['Du',0],['Wer schneller ist',0]],order:[['A'],['du']],
+  ex:'Nichts geregelt → rechts vor links (§ 8 StVO). A kommt von rechts und fährt zuerst. Typisch in Wohngebieten und 30-Zonen.',
+  tip:'In der 30-Zone fast immer rechts vor links – langsam ranfahren.'},
+
+ {id:'rvl2',cat:'rvl',title:'Rechts vor links, von links',arms:'NESW',signs:{},
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst geradeaus, A kommt von links. Wer fährt zuerst?',
+  opts:[['Du',1],['A',0],['Beide gleichzeitig',0]],order:[['du'],['A']],
+  ex:'Du kommst für A von rechts – also hast du Vorfahrt. Fahr trotzdem aufmerksam: Wenn A dich nicht sieht, wartest du lieber (§ 1 StVO, ständige Vorsicht).',
+  tip:'Vorfahrt haben heißt nicht: Vorfahrt erzwingen.'},
+
+ {id:'rvl3',cat:'rvl',title:'Linksabbiegen ohne Schilder',arms:'NESW',signs:{},
+  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'N',move:'straight'}],
+  q:'Du willst links, A kommt dir entgegen. Wer zuerst?',
+  opts:[['A',1],['Du – A kommt ja nicht von rechts',0],['Wer zuerst da ist',0]],order:[['A'],['du']],
+  ex:'Rechts vor links hilft hier nicht, A kommt dir entgegen. Es gilt die Abbiegeregel: Linksabbieger lässt den Gegenverkehr durch.',
+  tip:'Gegenverkehr + Linksabbiegen = warten.'},
+
+ {id:'amp1',cat:'ampel',title:'Ampel ausgefallen',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},lights:{S:'off',N:'off',E:'off',W:'off'},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
+  q:'Die Ampel ist aus. Wer fährt zuerst?',
+  opts:[['A',1],['Du – du bist rechts von A',0],['Ohne Ampel gilt rechts vor links',0]],order:[['A'],['du']],
+  ex:'Ist die Ampel aus (oder blinkt gelb), gelten die Verkehrszeichen. Du hast 205, A ist auf der Vorfahrtstraße. Rechts vor links gilt nur, wenn gar nichts geregelt ist.',
+  tip:'Ampel aus → Schilder an der Ampel suchen.'},
+
+ {id:'amp2',cat:'ampel',title:'Grün, aber 205',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},lights:{S:'green',N:'green',E:'red',W:'red'},main:['W','E'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
+  q:'Schau auf deinen Mast. Wer fährt zuerst?',
+  opts:[['Du – die Ampel geht vor',1],['A – A ist auf der Vorfahrtstraße',0],['Wer zuerst da war',0]],order:[['du'],['A']],
+  ex:'Ampeln gehen Verkehrszeichen vor. Bei Grün fährst du, A hat Rot. Das 205 zählt erst, wenn die Ampel aus ist oder gelb blinkt.',
+  tip:'Rangfolge: Polizei → Ampel → Schilder → rechts vor links.'},
+
+ {id:'amp3',cat:'ampel',title:'Linksabbiegen bei Grün',arms:'NESW',signs:{},lights:{S:'green',N:'green',E:'red',W:'red'},
+  cars:[{id:'du',arm:'S',move:'left'},{id:'B',arm:'N',move:'straight'}],
+  q:'Grün für dich und den Gegenverkehr. Du willst links. Wer zuerst?',
+  opts:[['B',1],['Du – du hast ja Grün',0],['Gleichzeitig',0]],order:[['B'],['du']],
+  ex:'Grün heißt nur „Kreuzung frei“, nicht „Vorrang vor dem Gegenverkehr“. Als Linksabbieger lässt du B durch. Fahr dafür schon in die Kreuzung ein und warte dort, ohne den Gegenverkehr zu behindern. Danach Fußgänger beachten.',
+  tip:'Bei Grün links: einfahren, warten, Gegenverkehr durch, Fußgänger checken.'},
+
+ {id:'amp4',cat:'ampel',title:'Grünpfeil-Schild',arms:'NESW',signs:{},lights:{S:'red',N:'red',E:'green',W:'green'},gp:'S',
+  cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
+  q:'Du willst rechts abbiegen. Was machst du?',
+  opts:[['Anhalten, A durchlassen, dann vorsichtig abbiegen',1],['Ohne Halten abbiegen – ist ja erlaubt',0],['Bis Grün warten',0]],order:[['A'],['du']],
+  ex:'Beim Grünpfeil-Schild (Zeichen 720) musst du zuerst an der Haltlinie anhalten. Abbiegen darfst du nur, wenn du niemanden behinderst oder gefährdest – vor allem den Querverkehr mit Grün (A) sowie Fußgänger und Radfahrer. Ein leuchtender grüner Pfeil in der Ampel ist etwas anderes: Dann darfst du ohne Halt fahren.',
+  tip:'Blechpfeil = Stopp + Vorsicht. Leuchtpfeil = freie Fahrt.'},
+
+ {id:'amp5',cat:'ampel',title:'Polizei an der Kreuzung',arms:'NESW',signs:{},lights:{S:'green',N:'green',E:'red',W:'red'},police:true,hint:'Der Polizist steht mit der Brust zu dir.',
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
+  q:'Deine Ampel ist grün. Der Polizist in der Mitte steht frontal zu dir. Was tust du?',
+  opts:[],order:[['A'],['du']],
+  ex:'Zeichen der Polizei gehen allem vor, auch der Ampel. Brust oder Rücken zu dir heißt Halt – trotz Grün. A sieht den Polizisten von der Seite, das heißt für A: Fahrt frei, obwohl seine Ampel Rot zeigt.',
+  tip:'Brust oder Rücken = Halt. Seite = Fahrt.'},
+
+ {id:'son1',cat:'sonder',title:'Ausfahrt vom Parkplatz',arms:'NSE',drive:'E',signs:{},
+  cars:[{id:'du',arm:'E',move:'left'},{id:'A',arm:'S',move:'straight'}],
+  q:'Du fährst vom Parkplatz und willst links abbiegen. A kommt von links. Wer zuerst?',
+  opts:[['A',1],['Du – du bist für A rechts',0],['Wer zuerst da ist',0]],order:[['A'],['du']],
+  ex:'Wer aus einem Grundstück, Parkplatz, verkehrsberuhigten Bereich oder über einen abgesenkten Bordstein auf die Straße fährt, muss alle durchlassen (§ 10 StVO). Rechts vor links gilt hier nicht.',
+  tip:'Abgesenkter Bordstein = du bist der Letzte.'},
+
+ {id:'son2',cat:'sonder',title:'Fußgänger beim Abbiegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],peds:['E'],
+  cars:[{id:'du',arm:'S',move:'right'}],
+  q:'',opts:[],order:[['ped'],['du']],
+  ex:'Beim Abbiegen musst du auf Fußgänger, die die Straße queren, in die du einbiegst, besondere Rücksicht nehmen und wenn nötig warten (§ 9 StVO). Die Vorfahrtstraße ändert daran nichts.',
+  tip:'Beim Abbiegen: Schulterblick + Fußgänger in der Zielstraße.'},
+
+ {id:'son3',cat:'sonder',title:'Rettungswagen',hint:'Blaulicht und Martinshorn sind an.',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
+  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight',kind:'rtw'}],
+  q:'Von rechts kommt ein Rettungswagen mit Blaulicht und Martinshorn. Was tust du?',
+  opts:[['Anhalten und ihn fahren lassen',1],['Weiterfahren – du hast Vorfahrt',0],['Nur ausweichen, wenn er hupt',0]],order:[['A'],['du']],
+  ex:'Blaulicht und Martinshorn zusammen bedeuten: sofort freie Bahn schaffen (§ 38 StVO). Das geht über Schilder und Ampeln. Nur Blaulicht ohne Horn ist eine Warnung, aber keine Pflicht zum Platzmachen.',
+  tip:'Blau + Horn = sofort Platz machen.'}
+];
+
+/* ---------- Geometrie ---------- */
+const ARM = {
+  S:{entry:[165,182],exitIn:[135,182],exitOut:[135,226],car:[165,210],rot:0,  fwd:[0,-1],sign:[198,200],light:[222,204]},
+  N:{entry:[135,118],exitIn:[165,118],exitOut:[165,74], car:[135,90], rot:180,fwd:[0,1], sign:[102,80], light:[78,84]},
+  E:{entry:[182,135],exitIn:[182,165],exitOut:[226,165],car:[210,135],rot:-90,fwd:[-1,0],sign:[204,80], light:[228,84]},
+  W:{entry:[118,165],exitIn:[118,135],exitOut:[74,135], car:[90,165], rot:90, fwd:[1,0], sign:[96,200], light:[72,204]}
+};
+const EXIT = {S:{straight:'N',right:'E',left:'W'},N:{straight:'S',right:'W',left:'E'},E:{straight:'W',right:'N',left:'S'},W:{straight:'E',right:'S',left:'N'}};
+const DIR = {N:[0,-1],S:[0,1],E:[1,0],W:[-1,0]};
+const VIEWROT = {S:0,W:-90,N:180,E:90};
+const COLORS = {du:'#D97757',A:'#4A7FD1',B:'#3E9E6E',C:'#8E6BC9'};
+
+function signSVG(t){
+  switch(t){
+    case '205': return `<polygon points="-11,-9 11,-9 0,10" fill="#fff" stroke="#C8102E" stroke-width="3" stroke-linejoin="round"/>`;
+    case '206': return `<polygon points="10.16,4.21 4.21,10.16 -4.21,10.16 -10.16,4.21 -10.16,-4.21 -4.21,-10.16 4.21,-10.16 10.16,-4.21" fill="#C8102E" stroke="#fff" stroke-width="1.4"/><text y="2.2" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" font-weight="700" fill="#fff">STOP</text>`;
+    case '306': return `<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="#fff" stroke="#222" stroke-width=".7"/><rect x="-5.3" y="-5.3" width="10.6" height="10.6" transform="rotate(45)" fill="#F4C20D"/>`;
+    case '301': return `<polygon points="-11,9 11,9 0,-10" fill="#fff" stroke="#C8102E" stroke-width="3" stroke-linejoin="round"/><path d="M0,-3.5V6" stroke="#111" stroke-width="2.6"/><path d="M-4.2,1.4H4.2" stroke="#111" stroke-width="1.1"/>`;
+    case '720': return `<rect x="-9" y="-6" width="18" height="12" rx="1.5" fill="#111"/><path d="M-5,0H3M0,-3.2 3.6,0 0,3.2" stroke="#3BD16F" stroke-width="2" fill="none"/>`;
+  }
+  return '';
+}
+function zusatzSVG(signArm, arms, main){
+  const L=9;
+  let g = `<rect x="-13" y="-11" width="26" height="22" rx="1.5" fill="#fff" stroke="#222" stroke-width="1"/><g transform="rotate(${VIEWROT[signArm]})">`;
+  arms.forEach(a=>{const d=DIR[a]; g+=`<line x1="0" y1="0" x2="${d[0]*L}" y2="${d[1]*L}" stroke="#555" stroke-width=".9"/>`;});
+  g += `<path d="M${DIR[main[0]][0]*L},${DIR[main[0]][1]*L}L0,0L${DIR[main[1]][0]*L},${DIR[main[1]][1]*L}" stroke="#000" stroke-width="4.2" fill="none" stroke-linejoin="miter"/>`;
+  return g + `</g>`;
+}
+function lightSVG(state){
+  const on = {red:'#E53935',yellow:'#FFB300',green:'#2ECC71'}, off='#4a4a4a';
+  const c = k => state===k ? on[k] : off;
+  return `<rect x="-6" y="-15" width="12" height="30" rx="3" fill="#1d1d1d"/>`+
+    `<circle cy="-8.5" r="3.6" fill="${c('red')}"/><circle cy="0" r="3.6" fill="${c('yellow')}"/><circle cy="8.5" r="3.6" fill="${c('green')}"/>`;
+}
+function carSVG(c){
+  const a = ARM[c.arm], [x,y] = a.car;
+  const rtw = c.kind==='rtw', col = rtw ? '#F5F5F2' : (COLORS[c.id]||'#888');
+  let g = `<g transform="translate(${x},${y}) rotate(${a.rot})">`;
+  g += `<rect x="-11" y="-18" width="22" height="36" rx="6" fill="${col}" stroke="rgba(0,0,0,.28)" stroke-width="1"/>`;
+  g += `<rect x="-8" y="-12" width="16" height="7" rx="2" fill="rgba(0,0,0,.38)"/><rect x="-8" y="10" width="16" height="4" rx="1.5" fill="rgba(0,0,0,.28)"/>`;
+  if(rtw) g += `<rect x="-11" y="2" width="22" height="3" fill="#D32F2F"/><circle class="blue" cx="-5" cy="-2" r="2.6"/><circle class="blue b2" cx="5" cy="-2" r="2.6"/>`;
+  if(c.move==='left')  g += `<circle class="blink" cx="-9" cy="-16.5" r="2.6"/><circle class="blink" cx="-9" cy="16.5" r="2.2"/>`;
+  if(c.move==='right') g += `<circle class="blink" cx="9" cy="-16.5" r="2.6"/><circle class="blink" cx="9" cy="16.5" r="2.2"/>`;
+  g += `</g>`;
+  const lbl = c.id==='du' ? 'Du' : (rtw ? 'RTW' : c.id);
+  g += `<text class="clabel" x="${x}" y="${y+ (rtw?10:4)}" style="${rtw?'fill:#C62828;font-size:7.5px':''}">${lbl}</text>`;
+  return g;
+}
+function arrowSVG(c){
+  const a = ARM[c.arm], ex = ARM[EXIT[c.arm][c.move]];
+  const col = c.kind==='rtw' ? '#D32F2F' : (COLORS[c.id]||'#888');
+  const front = [a.car[0]+a.fwd[0]*19, a.car[1]+a.fwd[1]*19];
+  const e = a.entry, xi = ex.exitIn, xo = ex.exitOut;
+  let ctrl;
+  if(c.move==='straight') ctrl = [(e[0]+xi[0])/2,(e[1]+xi[1])/2];
+  else if(c.arm==='S'||c.arm==='N') ctrl = [e[0], xi[1]];
+  else ctrl = [xi[0], e[1]];
+  const d = [xo[0]-xi[0], xo[1]-xi[1]], len = Math.hypot(d[0],d[1]), u=[d[0]/len,d[1]/len];
+  const tip = xo, base=[tip[0]-u[0]*9, tip[1]-u[1]*9], p=[-u[1],u[0]];
+  return `<path d="M${front}L${e}Q${ctrl} ${xi}L${base}" fill="none" stroke="${col}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>`+
+    `<polygon points="${tip} ${base[0]+p[0]*6},${base[1]+p[1]*6} ${base[0]-p[0]*6},${base[1]-p[1]*6}" fill="${col}" opacity=".9"/>`;
+}
+
+function scene(s, solved){
+  const arms = s.arms.split('');
+  const signs = s.signs||{}, lights = s.lights||{};
+  let o = `<svg class="scene" viewBox="0 0 300 300" role="img" aria-label="${s.title}">`;
+  o += `<rect width="300" height="300" class="grass"/>`;
+  const R={N:[120,0,60,120],S:[120,180,60,120],E:[180,120,120,60],W:[0,120,120,60]};
+  o += `<rect x="120" y="120" width="60" height="60" class="road"/>`;
+  arms.forEach(a=>{const r=R[a]; o+=`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" class="${s.drive===a?'drive':'road'}"/>`;});
+  if(s.drive){
+    const cb={E:'M181,122V178',W:'M119,122V178',N:'M122,119H178',S:'M122,181H178'}[s.drive];
+    o += `<path d="${cb}" class="curb"/>`;
+    const lp={E:[240,112],W:[60,112],N:[210,40],S:[210,262]}[s.drive];
+    o += `<text class="tlabel" x="${lp[0]}" y="${lp[1]}">Parkplatz</text>`;
+  }
+  if(solved && s.main){
+    const OUT={N:[150,0],S:[150,300],E:[300,150],W:[0,150]};
+    o += `<path class="mainhl" d="M${OUT[s.main[0]]}L150,150L${OUT[s.main[1]]}"/>`;
+  }
+  const CL={N:[150,0,150,116],S:[150,184,150,300],E:[184,150,300,150],W:[0,150,116,150]};
+  arms.forEach(a=>{ if(s.drive===a) return; const l=CL[a]; o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="cl"/>`;});
+  const SL={S:[150,185,180,185],N:[120,115,150,115],E:[185,120,185,150],W:[115,150,115,180]};
+  arms.forEach(a=>{
+    const sg=signs[a]||[], l=SL[a];
+    if(sg.includes('206')||lights[a]) o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="sl"/>`;
+    else if(sg.includes('205')) o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="sl dash"/>`;
+  });
+  s.cars.forEach(c=>{ o+=arrowSVG(c); });
+  s.cars.forEach(c=>{ o+=carSVG(c); });
+  Object.keys(signs).forEach(a=>{
+    const sg=signs[a]; if(!sg.length) return;
+    const [x,y]=ARM[a].sign, main=sg.filter(t=>t!=='z')[0];
+    o += `<g transform="translate(${x},${y})">${signSVG(main)}</g>`;
+    if(sg.includes('z')) o += `<g transform="translate(${x},${y+26})">${zusatzSVG(a,arms,s.main)}</g>`;
+  });
+  Object.keys(lights).forEach(a=>{
+    const [x,y]=ARM[a].light;
+    o += `<g transform="translate(${x},${y})">${lightSVG(lights[a])}</g>`;
+    if(s.gp===a) o += `<g transform="translate(${x},${y+24})">${signSVG('720')}</g>`;
+  });
+  const PP={E:[198,150],W:[102,150],N:[150,102],S:[150,198]};
+  (s.peds||[]).forEach(a=>{ const p=PP[a]; o+=`<text x="${p[0]}" y="${p[1]+8}" font-size="24" text-anchor="middle">🚶</text>`; });
+  if(s.police) o += `<circle cx="150" cy="150" r="13" fill="var(--surface)" opacity=".85"/><text x="150" y="157" font-size="19" text-anchor="middle">👮</text>`;
+  if(solved && s.order){
+    s.order.forEach((grp,i)=>grp.forEach(id=>{
+      let bx,by; const c=s.cars.find(k=>k.id===id);
+      if(id==='ped'&&(s.peds||[]).length){ const p=PP[s.peds[0]]; bx=p[0]+16; by=p[1]-12; }
+      else if(c){ const a=ARM[c.arm]; bx=a.car[0]-a.fwd[0]*30; by=a.car[1]-a.fwd[1]*30; }
+      else return;
+      o+=`<g class="badge"><circle cx="${bx}" cy="${by}" r="9"/><text x="${bx}" y="${by+4}">${i+1}</text></g>`;
+    }));
+  }
+  return o + `</svg>`;
+}
+
+/* ---------- Auf Fahrersicht drehen: „Du“ kommt immer von unten (S) ---------- */
+const ORDER=['N','E','S','W'];
+function rel(s){
+  const du=s.cars.find(c=>c.id==='du').arm, r=ORDER.indexOf(du)-2;
+  const m=a=>ORDER[(ORDER.indexOf(a)-r+8)%4];
+  const mo=o=>{const n={};Object.keys(o||{}).forEach(k=>n[m(k)]=o[k]);return n;};
+  return {...s, arms:s.arms.split('').map(m).join(''), signs:mo(s.signs), lights:mo(s.lights),
+    main:s.main&&s.main.map(m), drive:s.drive&&m(s.drive), gp:s.gp&&m(s.gp),
+    peds:(s.peds||[]).map(m), cars:s.cars.map(c=>({...c,arm:m(c.arm)}))};
+}
+
+/* ---------- Fahrersicht (Perspektive) ----------
+   Welt: X quer (Mittellinie deiner Straße = 0, deine Spur 0…3.5), Z nach vorn.
+   Querstraße liegt zwischen Z=8 und Z=15. */
+const F=200, CAMX=1.5, CAMH=3.5, HZ=96;
+function P(X,Z){ return [200+F*(X-CAMX)/Z, HZ+F*CAMH/Z]; }
+function pt(X,Z){ const p=P(X,Z); return p[0].toFixed(1)+','+p[1].toFixed(1); }
+function quad(x1,x2,z1,z2,cls){ return `<polygon class="${cls}" points="${pt(x1,z1)} ${pt(x2,z1)} ${pt(x2,z2)} ${pt(x1,z2)}"/>`; }
+const WA = {
+  S:{entry:[1.75,7.6], exitIn:[-1.75,7.6], exitOut:[-1.75,4.6], front:[1.75,4.7]},
+  N:{entry:[-1.75,15.4],exitIn:[1.75,15.4], exitOut:[1.75,34],  front:[-1.75,16.4]},
+  E:{entry:[3.6,13.25], exitIn:[3.6,9.75],  exitOut:[11,9.75],  front:[3.75,13.25]},
+  W:{entry:[-3.6,9.75], exitIn:[-3.6,13.25],exitOut:[-11,13.25],front:[-3.75,9.75]}
+};
+function fpArrow(c){
+  const a=WA[c.arm], ex=WA[EXIT[c.arm][c.move]], e=a.entry, xi=ex.exitIn, xo=ex.exitOut;
+  let k;
+  if(c.move==='straight') k=[(e[0]+xi[0])/2,(e[1]+xi[1])/2];
+  else if(c.arm==='S'||c.arm==='N') k=[e[0],xi[1]]; else k=[xi[0],e[1]];
+  const L=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t], w=[];
+  for(let i=0;i<=6;i++) w.push(L(a.front,e,i/6));
+  for(let i=1;i<=18;i++){const t=i/18,u=1-t; w.push([u*u*e[0]+2*u*t*k[0]+t*t*xi[0],u*u*e[1]+2*u*t*k[1]+t*t*xi[1]]);}
+  for(let i=1;i<=10;i++) w.push(L(xi,xo,i/10));
+  const sp=w.map(p=>P(p[0],p[1])), tip=sp[sp.length-1], pre=sp[sp.length-3];
+  const d=[tip[0]-pre[0],tip[1]-pre[1]], n=Math.hypot(d[0],d[1])||1, u=[d[0]/n,d[1]/n], b=[tip[0]-u[0]*10,tip[1]-u[1]*10], q=[-u[1],u[0]];
+  const col=c.kind==='rtw'?'#D32F2F':(COLORS[c.id]||'#888');
+  return `<polyline points="${sp.slice(0,-1).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>`+
+    `<polygon points="${tip[0]},${tip[1]} ${b[0]+q[0]*6.5},${b[1]+q[1]*6.5} ${b[0]-q[0]*6.5},${b[1]-q[1]*6.5}" fill="${col}" opacity=".9"/>`;
+}
+function bubble(x,y,c){
+  const rtw=c.kind==='rtw', col=rtw?'#D32F2F':COLORS[c.id], t=rtw?'RTW':c.id;
+  return `<circle cx="${x}" cy="${y}" r="${rtw?12:9.5}" fill="${col}" stroke="#fff" stroke-width="1.6"/><text class="clabel" x="${x}" y="${y+3.6}" style="font-size:${rtw?8:10.5}px">${t}</text>`;
+}
+function sideCar(c,X,Z,dir){
+  const s=F/Z, [cx,gy]=P(X,Z), L=4.3*s, rtw=c.kind==='rtw', col=rtw?'#F4F4F1':COLORS[c.id];
+  const f=v=>(cx+dir*v*L).toFixed(1), bb=gy-.2*s, Hb=(rtw?1.9:.72)*s, bt=bb-Hb, dark='rgba(20,30,40,.6)';
+  let g=`<ellipse cx="${cx}" cy="${gy}" rx="${L*.52}" ry="${.14*s}" fill="rgba(0,0,0,.22)"/>`;
+  g+=`<rect x="${cx-L/2}" y="${bt}" width="${L}" height="${Hb}" rx="${.24*s}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>`;
+  let top;
+  if(!rtw){
+    const Hc=.55*s; top=bt-Hc;
+    g+=`<polygon points="${f(-.37)},${bt+1} ${f(-.29)},${bt-Hc} ${f(.05)},${bt-Hc} ${f(.24)},${bt+1}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>`;
+    g+=`<polygon points="${f(-.32)},${bt} ${f(-.26)},${bt-Hc*.8} ${f(-.08)},${bt-Hc*.8} ${f(-.08)},${bt}" fill="${dark}"/>`;
+    g+=`<polygon points="${f(-.04)},${bt} ${f(-.04)},${bt-Hc*.8} ${f(.04)},${bt-Hc*.8} ${f(.19)},${bt}" fill="${dark}"/>`;
+  } else {
+    top=bt-.3*s;
+    g+=`<rect x="${cx-L/2}" y="${bt+Hb*.56}" width="${L}" height="${Hb*.12}" fill="#D32F2F"/>`;
+    g+=`<polygon points="${f(.34)},${bt+Hb*.1} ${f(.49)},${bt+Hb*.1} ${f(.49)},${bt+Hb*.45} ${f(.34)},${bt+Hb*.45}" fill="${dark}"/>`;
+    g+=`<circle class="blue" cx="${f(.32)}" cy="${bt-.1*s}" r="${.17*s}"/><circle class="blue b2" cx="${f(.12)}" cy="${bt-.1*s}" r="${.17*s}"/>`;
+  }
+  g+=`<circle cx="${f(-.3)}" cy="${bb}" r="${.33*s}" fill="#222"/><circle cx="${f(.3)}" cy="${bb}" r="${.33*s}" fill="#222"/>`;
+  if(c.move!=='straight'){ const r=Math.max(2.4,.14*s); g+=`<circle class="blink" cx="${f(.49)}" cy="${bt+Hb*.32}" r="${r}"/><circle class="blink" cx="${f(-.49)}" cy="${bt+Hb*.32}" r="${r}"/>`; }
+  return g + bubble(cx, top-13, c);
+}
+function frontCar(c,X,Z){
+  const s=F/Z, [cx,gy]=P(X,Z), col=COLORS[c.id]||'#888', dark='rgba(20,30,40,.6)';
+  let g=`<ellipse cx="${cx}" cy="${gy}" rx="${1.05*s}" ry="${.14*s}" fill="rgba(0,0,0,.22)"/>`;
+  g+=`<rect x="${cx-.82*s}" y="${gy-.3*s}" width="${.26*s}" height="${.3*s}" rx="${.06*s}" fill="#222"/><rect x="${cx+.56*s}" y="${gy-.3*s}" width="${.26*s}" height="${.3*s}" rx="${.06*s}" fill="#222"/>`;
+  g+=`<polygon points="${cx-.74*s},${gy-.86*s} ${cx-.56*s},${gy-1.42*s} ${cx+.56*s},${gy-1.42*s} ${cx+.74*s},${gy-.86*s}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".7"/>`;
+  g+=`<polygon points="${cx-.64*s},${gy-.88*s} ${cx-.5*s},${gy-1.34*s} ${cx+.5*s},${gy-1.34*s} ${cx+.64*s},${gy-.88*s}" fill="${dark}"/>`;
+  g+=`<rect x="${cx-.9*s}" y="${gy-.9*s}" width="${1.8*s}" height="${.66*s}" rx="${.18*s}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".7"/>`;
+  g+=`<circle cx="${cx-.6*s}" cy="${gy-.62*s}" r="${.13*s}" fill="#FFF8D6"/><circle cx="${cx+.6*s}" cy="${gy-.62*s}" r="${.13*s}" fill="#FFF8D6"/>`;
+  /* Entgegenkommend: sein links = dein rechts */
+  const r=Math.max(2.4,.13*s);
+  if(c.move==='left')  g+=`<circle class="blink" cx="${cx+.86*s}" cy="${gy-.74*s}" r="${r}"/>`;
+  if(c.move==='right') g+=`<circle class="blink" cx="${cx-.86*s}" cy="${gy-.74*s}" r="${r}"/>`;
+  return g + bubble(cx, gy-1.42*s-13, c);
+}
+function fpStopLine(arm,type){
+  if(!type) return '';
+  let o='';
+  if(arm==='S'){ if(type==='solid') return quad(0,3.5,7.45,7.85,'mkf'); for(let x=0;x<3.4;x+=.62) o+=quad(x,x+.36,7.5,7.85,'mkf'); return o; }
+  if(arm==='N'){ if(type==='solid') return quad(-3.5,0,15.15,15.6,'mkf'); for(let x=-3.5;x<-.1;x+=.62) o+=quad(x,x+.36,15.15,15.6,'mkf'); return o; }
+  const x1=arm==='W'?-3.95:3.6, z1=arm==='W'?8:11.5;
+  if(type==='solid') return quad(x1,x1+.35,z1,z1+3.5,'mkf');
+  for(let z=z1;z<z1+3.4;z+=.62) o+=quad(x1,x1+.35,z,z+.36,'mkf'); return o;
+}
+function lineType(s,a){ const sg=(s.signs||{})[a]||[]; return (sg.includes('206')||(s.lights||{})[a])?'solid':sg.includes('205')?'dash':''; }
+function postStack(s){
+  const sg=(s.signs||{}).S||[], li=(s.lights||{}).S, gp=s.gp==='S', main=sg.filter(t=>t!=='z')[0], z=sg.includes('z');
+  if(!main&&!li&&!gp) return '';
+  const items=[];
+  if(li) items.push([46,(x,y)=>`<g transform="translate(${x},${y}) scale(1.5)">${lightSVG(li)}</g>`]);
+  if(gp) items.push([20,(x,y)=>`<g transform="translate(${x},${y}) scale(1.45)">${signSVG('720')}</g>`]);
+  if(main) items.push([37,(x,y)=>`<g transform="translate(${x},${y}) scale(1.65)">${signSVG(main)}</g>`]);
+  if(z) items.push([30,(x,y)=>`<g transform="translate(${x},${y}) scale(1.32)">${zusatzSVG('S',s.arms.split(''),s.main)}</g>`]);
+  const [bx,by]=P(5.3,5.6), total=items.reduce((a,i)=>a+i[0]+4,0);
+  let y=by-56-total, g=`<line x1="${bx}" y1="${by}" x2="${bx}" y2="${y+8}" stroke="#8B9196" stroke-width="3.2"/>`;
+  items.forEach(([h,fn])=>{ g+=fn(bx,y+h/2); y+=h+4; });
+  return g;
+}
+function fpScene(s){
+  const arms=s.arms.split(''), has=a=>arms.includes(a), du=s.cars.find(c=>c.id==='du');
+  let o=`<svg class="scene fp" viewBox="0 0 400 300" role="img" aria-label="Fahrersicht: ${s.title}">`;
+  o+=`<defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient></defs>`;
+  o+=`<rect width="400" height="${HZ+1}" fill="url(#skyg)"/><rect y="${HZ}" width="400" height="${300-HZ}" class="grass"/>`;
+  o+=`<path d="M0,${HZ+1} V${HZ-5} Q30,${HZ-13} 70,${HZ-6} T150,${HZ-8} T230,${HZ-4} T310,${HZ-10} T400,${HZ-5} V${HZ+1}Z" class="trees"/>`;
+  if(has('N')) o+=quad(-3.5,3.5,15,900,'road');
+  else { const a=P(-14,15.6), b=P(14,15.6), h=F*1.5/15.6; o+=`<rect x="${a[0]}" y="${a[1]-h}" width="${b[0]-a[0]}" height="${h}" rx="4" class="hedge"/>`; }
+  const L=has('W')?-140:-3.5, R=has('E')?140:3.5;
+  o+=quad(L,R,8,15,'road');
+  if(s.drive==='S'){ o+=quad(-140,140,6.2,8,'walk'); o+=quad(-3.5,3.5,2.4,6.2,'drive'); o+=quad(-3.5,3.5,7.85,8,'curbfp'); }
+  else o+=quad(-3.5,3.5,2.4,8,'road');
+  if(s.drive!=='S') for(let z=3;z<7.3;z+=2) o+=quad(-.09,.09,z,z+1,'mkf');
+  if(has('N')) for(let z=16.5;z<160;z*=1.3) o+=quad(-.1,.1,z,z*1.13,'mkf');
+  for(let x=Math.floor(L/3)*3;x<R;x+=3){ if(x+1.6>-3.7&&x<3.7) continue; o+=quad(x,x+1.6,11.35,11.65,'mkf'); }
+  ['S','N','E','W'].forEach(a=>{ if(has(a)&&s.drive!==a) o+=fpStopLine(a,lineType(s,a)); });
+  s.cars.forEach(c=>{ o+=fpArrow(c); });
+  const byZ={N:16.6,E:13.25,W:9.75};
+  s.cars.filter(c=>c.id!=='du').sort((a,b)=>byZ[b.arm]-byZ[a.arm]).forEach(c=>{
+    o+=`<g class="tap" data-party="${c.id}">`;
+    if(c.arm==='N') o+=frontCar(c,-1.75,16.6);
+    else if(c.arm==='E') o+=sideCar(c,5.9,13.25,-1);
+    else if(c.arm==='W') o+=sideCar(c,-5.9,9.75,1);
+    o+=`</g>`;
+  });
+  (s.peds||[]).forEach(a=>{ const X=a==='E'?5.4:a==='W'?-5.4:0, Z=11.5, p=P(X,Z); o+=`<text class="tap" data-party="ped" x="${p[0]}" y="${p[1]}" font-size="${(1.8*F/Z).toFixed(1)}" text-anchor="middle">🚶</text>`; });
+  if(s.police){ const p=P(0,11.5); o+=`<text x="${p[0]}" y="${p[1]}" font-size="${(1.9*F/11.5).toFixed(1)}" text-anchor="middle">👮</text>`; }
+  o+=postStack(s);
+  o+=`<path class="tap" data-party="du" d="M-10,300 V285 Q200,256 410,285 V300Z" fill="${COLORS.du}"/><path d="M70,281 Q200,263 330,281" stroke="rgba(255,255,255,.32)" stroke-width="2" fill="none"/>`;
+  o+=`<text class="clabel" x="200" y="290" style="font-size:11px">Du</text>`;
+  if(du.move==='left')  o+=`<path class="blinkg" d="M24,284 l11,-8 v4.5 h11 v7 h-11 v4.5z"/>`;
+  if(du.move==='right') o+=`<path class="blinkg" d="M376,284 l-11,-8 v4.5 h-11 v7 h11 v4.5z"/>`;
+  return o+`</svg>`;
+}
+
+/* ---------- Speicher ---------- */
+const KEY='vorfahrt-coach-v1';
+let stats = {};
+try{ stats = JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ stats={}; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(stats)); }catch(e){} }
+
+/* ---------- UI ---------- */
+const $ = id => document.getElementById(id);
+const inner=$('inner'), chat=$('chat'), cbox=$('cbox');
+let state = {mode:null, queue:[], idx:0, right:0, answered:0, cur:null, retried:new Set(), cardEl:null};
+
+function esc(t){return t.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function scrollDown(){ requestAnimationFrame(()=>chat.scrollTo({top:chat.scrollHeight,behavior:'smooth'})); }
+
+function addAI(html){
+  const m=document.createElement('div'); m.className='msg ai';
+  m.innerHTML=`<div class="avatar">${WHEEL}</div><div class="body">${html}</div>`;
+  inner.appendChild(m); scrollDown(); return m;
+}
+function addUser(text){
+  const m=document.createElement('div'); m.className='msg user';
+  m.innerHTML=`<div class="bubble">${esc(text)}</div>`; inner.appendChild(m); scrollDown();
+}
+function setProgress(){
+  const p=$('progress');
+  if(!state.mode){p.hidden=true;return;}
+  p.hidden=false; p.textContent=`${Math.min(state.idx+1,state.queue.length)} / ${state.queue.length}`;
+}
+function modeName(m){ return m==='all'?'Alle Situationen':m==='fehler'?'Fehler wiederholen':CATS[m]; }
+function idsFor(mode){
+  if(mode==='all') return SC.map(s=>s.id);
+  if(mode==='fehler') return SC.filter(s=>stats[s.id] && stats[s.id].last===false).map(s=>s.id);
+  return SC.filter(s=>s.cat===mode).map(s=>s.id);
+}
+
+function renderNav(){
+  const modes=['all',...Object.keys(CATS),'fehler'];
+  $('nav').innerHTML = modes.map(m=>`<button class="navbtn ${state.mode===m?'active':''}" data-mode="${m}"><span>${modeName(m)}</span><span class="cnt">${idsFor(m).length}</span></button>`).join('');
+  $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{ closeSide(); start(b.dataset.mode); });
+  $('stats').innerHTML = Object.keys(CATS).map(c=>{
+    const ids=SC.filter(s=>s.cat===c), ok=ids.filter(s=>stats[s.id]&&stats[s.id].last).length;
+    return `<div class="stat"><div class="row"><span>${CATS[c]}</span><span>${ok}/${ids.length}</span></div><div class="bar"><i style="width:${ids.length?ok/ids.length*100:0}%"></i></div></div>`;
+  }).join('');
+}
+
+function welcome(){
+  state={mode:null,queue:[],idx:0,right:0,answered:0,cur:null,retried:new Set(),cardEl:null};
+  $('topTitle').textContent='Vorfahrt-Coach'; setProgress(); renderNav();
+  const done = SC.filter(s=>stats[s.id]&&stats[s.id].last).length;
+  inner.innerHTML = `<div class="welcome"><div class="mark">${WHEEL}</div>
+    <h1>Wer hat hier Vorfahrt?</h1>
+    <p>Trainier Vorfahrtstraßen, abknickende Vorfahrt und knifflige Kreuzungen – Situation für Situation, mit Auflösung.${done?` Du hast schon ${done} von ${SC.length} sicher.`:''}</p>
+    <div class="chips">
+      <button class="chip" data-mode="all">🚦 Alle Situationen</button>
+      <button class="chip" data-mode="vs">🔶 Vorfahrtstraße</button>
+      <button class="chip" data-mode="abk">↪️ Abknickende Vorfahrt</button>
+      <button class="chip" data-mode="sonder">🅿️ Sonderfälle</button>
+      <button class="chip" data-act="sheet">📋 Spickzettel</button>
+    </div></div>`;
+  inner.querySelectorAll('.chip').forEach(b=>b.onclick=()=> b.dataset.act==='sheet' ? showSheet() : start(b.dataset.mode));
+  cbox.innerHTML='';
+}
+
+function start(mode){
+  const ids=idsFor(mode);
+  state={mode,queue:shuffle(ids),idx:0,right:0,answered:0,cur:null,retried:new Set(),cardEl:null};
+  inner.innerHTML=''; renderNav();
+  $('topTitle').textContent=modeName(mode);
+  if(!ids.length){
+    addAI(`<p>Gerade gibt es nichts zu wiederholen – alle Situationen, die du schon gemacht hast, sitzen. 👍</p>`);
+    setProgress(); endActions(); return;
+  }
+  addUser(modeName(mode));
+  addAI(`<p>Okay, ${ids.length} Situationen. Geh jedes Mal gleich vor: <b>erst Schilder und Ampeln</b>, dann schauen, wer auf der Vorfahrtstraße ist, dann die Abbiegeregeln.</p><p>Falsch beantwortete Situationen kommen in dieser Runde nochmal.</p>`);
+  next();
+}
+
+function next(){
+  if(state.idx>=state.queue.length){ finish(); return; }
+  setProgress();
+  const s = SC.find(x=>x.id===state.queue[state.idx]); state.cur=s; state.rel=rel(s);
+  const m = addAI(`<div class="label">${CATS[s.cat]}</div>
+    <div class="card"><div class="sc">${fpScene(state.rel)}</div>
+    <div class="legend"><span>Deine Sicht – lies dein Schild</span><span>Pfeile = geplante Richtung</span><span>Blinker blinkt</span></div></div>
+    ${s.hint?`<p class="hint">${esc(s.hint)}</p>`:''}<p><b>Wer darf zuerst fahren?</b></p>`);
+  state.cardEl = m.querySelector('.sc');
+  const parties = ['du', ...s.cars.filter(c=>c.id!=='du').map(c=>c.id), ...((s.peds||[]).length?['ped']:[])];
+  const opts = parties.map(p=>[partyLabel(s,p), s.order[0].includes(p)?1:0, p]);
+  cbox.innerHTML = `<div class="chint">Tippe auf eine Partei – oder direkt ins Bild</div><div class="parties">` +
+    opts.map((o,i)=>`<button class="party" data-i="${i}"><i style="background:${partyColor(s,o[2])}"></i>${esc(o[0])}</button>`).join('') + `</div>`;
+  cbox.querySelectorAll('.party').forEach(b=>b.onclick=()=>answer(opts[+b.dataset.i]));
+  state.cardEl.onclick = e => { const t=e.target.closest('[data-party]'); if(!t||!state.cur) return; const o=opts.find(x=>x[2]===t.dataset.party); if(o) answer(o); };
+  state.keyOpts = opts;
+}
+
+function partyLabel(s,p){ if(p==='du') return 'Du'; if(p==='ped') return 'Fußgänger'; const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'Rettungswagen':p; }
+function partyColor(s,p){ if(p==='ped') return '#8A8780'; const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'#D32F2F':(COLORS[p]||'#888'); }
+function answer(o){
+  const s=state.cur; if(!s) return;
+  state.cur=null; state.keyOpts=null;
+  addUser(o[0]);
+  const ok = !!o[1];
+  state.answered++; if(ok) state.right++;
+  const st = stats[s.id] || {seen:0,right:0};
+  st.seen++; if(ok) st.right++; st.last=ok; stats[s.id]=st; save();
+  if(state.cardEl) state.cardEl.innerHTML = fpScene(state.rel) + `<div class="sol-label">Auflösung von oben · ${esc(s.title)}</div>` + scene(state.rel,true);
+  const correct = s.order[0].map(p=>partyLabel(s,p)).join(' oder ');
+  addAI(`<div class="verdict ${ok?'ok':'bad'}">${ok?'✓ Richtig':'✗ Nicht ganz'}</div>
+    ${ok?'':`<p>Richtig wäre: <b>${esc(correct)}</b></p>`}
+    <p>${esc(s.ex)}</p>
+    ${s.main?`<p style="font-size:14px;color:var(--muted);font-family:var(--sans)">Gelb markiert: Verlauf der Vorfahrtstraße. Zahlen: Reihenfolge.</p>`:`<p style="font-size:14px;color:var(--muted);font-family:var(--sans)">Zahlen im Bild: Reihenfolge.</p>`}
+    <div class="tip"><b>Merke:</b> ${esc(s.tip)}</div>`);
+  if(!ok && !state.retried.has(s.id)){
+    state.retried.add(s.id);
+    state.queue.splice(Math.min(state.idx+4,state.queue.length),0,s.id);
+  }
+  state.idx++; renderNav(); setProgress();
+  const last = state.idx>=state.queue.length;
+  cbox.innerHTML = `<div class="actions"><button class="primary" id="nextBtn">${last?'Ergebnis ansehen':'Nächste Situation'} →</button></div>`;
+  $('nextBtn').onclick=()=>{ cbox.innerHTML=''; next(); };
+}
+
+function finish(){
+  $('progress').hidden=true;
+  const pct = state.answered ? Math.round(state.right/state.answered*100) : 0;
+  const msg = pct>=90 ? 'Stark – das sitzt.' : pct>=70 ? 'Solide. Die Fehler kommen unter „Fehler wiederholen“ nochmal.' : 'Da ist noch Luft. Schau dir den Spickzettel an und wiederhol die Fehler.';
+  addAI(`<p><b>Runde fertig:</b> ${state.right} von ${state.answered} richtig (${pct} %).</p><p>${msg}</p>`);
+  endActions();
+}
+function endActions(){
+  const m=state.mode;
+  cbox.innerHTML = `<div class="actions">
+    <button class="ghost" id="a1">Spickzettel</button>
+    <button class="ghost" id="a2">Fehler wiederholen</button>
+    <button class="primary" id="a3">Nochmal</button></div>`;
+  $('a1').onclick=showSheet; $('a2').onclick=()=>start('fehler'); $('a3').onclick=()=>start(m&&m!=='fehler'?m:'all');
+}
+
+function mini(t){ return `<svg viewBox="-13 -13 26 26">${signSVG(t)}</svg>`; }
+function showSheet(){
+  closeSide();
+  if(inner.querySelector('.welcome')){ inner.innerHTML=''; $('topTitle').textContent='Spickzettel'; }
+  addUser('Spickzettel');
+  addAI(`<div class="sheet">
+    <h3>Wer regelt? (von oben nach unten)</h3>
+    <ol><li>Polizei</li><li>Ampel</li><li>Verkehrszeichen</li><li>Rechts vor links</li></ol>
+    <h3>Die wichtigsten Schilder</h3>
+    <div class="signrow">${mini('306')}<span><b>306 Vorfahrtstraße</b> – Vorfahrt bis zum Ende-Schild (307).</span></div>
+    <div class="signrow">${mini('301')}<span><b>301 Vorfahrt</b> – nur an der nächsten Kreuzung.</span></div>
+    <div class="signrow">${mini('205')}<span><b>205 Vorfahrt gewähren</b> – Vorfahrtstraße zuerst, rechtzeitig langsam werden.</span></div>
+    <div class="signrow">${mini('206')}<span><b>206 Stopp</b> – immer anhalten, dann Vorfahrt gewähren.</span></div>
+    <div class="signrow"><svg viewBox="-14 -14 28 28">${zusatzSVG('S',['N','E','S','W'],['S','W'])}</svg><span><b>Zusatzzeichen</b> – dicke Linie = Verlauf der abknickenden Vorfahrtstraße. Wer ihr folgt, blinkt.</span></div>
+    <h3>Abknickende Vorfahrt</h3>
+    <ul><li>Wer auf der dicken Linie ist, hat Vorrang vor den Nebenstraßen.</li><li>Nebenstraße gegen Nebenstraße: rechts vor links.</li><li>Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt (auch geradeaus!) und kreuzt, wartet.</li><li>Dem Knick folgen = abbiegen: blinken, Fußgänger beachten.</li></ul>
+    <h3>Abbiegen</h3>
+    <ul><li>Linksabbieger lässt den Gegenverkehr durch – auch auf der Vorfahrtstraße und bei Grün.</li><li>Fußgänger in der Straße, in die du einbiegst: warten, wenn nötig.</li><li>Grünpfeil-Schild: erst anhalten, dann vorsichtig abbiegen.</li></ul>
+    <h3>Du bist immer der Letzte, wenn …</h3>
+    <ul><li>du aus einem Grundstück, Parkplatz oder verkehrsberuhigten Bereich kommst,</li><li>du über einen abgesenkten Bordstein fährst,</li><li>Blaulicht + Martinshorn kommt.</li></ul>
+    </div>`);
+  if(state.cur){ /* laufende Frage bleibt offen */ } else if(!state.mode){ cbox.innerHTML=`<div class="actions"><button class="primary" id="s1">Training starten →</button></div>`; $('s1').onclick=()=>start('all'); }
+}
+
+/* ---------- Sidebar mobil ---------- */
+function openSide(){ $('side').classList.add('open'); $('scrim').classList.add('show'); }
+function closeSide(){ $('side').classList.remove('open'); $('scrim').classList.remove('show'); }
+$('menuBtn').onclick=openSide; $('scrim').onclick=closeSide;
+$('newBtn').onclick=()=>{closeSide();welcome();}; $('newBtn2').onclick=welcome;
+$('sheetBtn').onclick=showSheet;
+$('resetBtn').onclick=()=>{ if(confirm('Gesamten Fortschritt löschen?')){ stats={}; save(); welcome(); } };
+
+/* Tastatur: 1–4 antworten, Enter = weiter */
+document.addEventListener('keydown',e=>{
+  if(state.keyOpts && /^[1-5]$/.test(e.key)){ const o=state.keyOpts[+e.key-1]; if(o) answer(o); }
+  else if(e.key==='Enter'){ const b=$('nextBtn'); if(b) b.click(); }
+});
+
+welcome();
+</script>
+</body>
+</html>
