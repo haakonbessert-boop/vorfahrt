@@ -325,12 +325,6 @@ const SC = [
   ex:'Die Vorfahrtstraße kommt von rechts und knickt in deine Fahrtrichtung ab. A folgt ihr und fährt in dieselbe Richtung wie du – A zuerst. Du und B seid in Nebenstraßen: rechts vor links. Für B kommst du von rechts, also fährst du vor B.',
   tip:'Erst die Vorfahrtstraße, dann rechts vor links unter den Nebenstraßen.'},
 
- {id:'abk9',cat:'abk',title:'Fußgänger beim Folgen',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],peds:['W'],
-  cars:[{id:'du',arm:'S',move:'left'}],
-  q:'',opts:[],order:[['ped'],['du']],
-  ex:'Wer der abknickenden Vorfahrt folgt, biegt rechtlich ab: Du musst blinken und auf Fußgänger achten, die die Straße queren, in die du einfährst (§ 9 StVO). Die Vorfahrt gilt gegenüber Fahrzeugen, nicht gegenüber diesen Fußgängern.',
-  tip:'Knick folgen = abbiegen: blinken, Schulterblick, Fußgänger.'},
-
  {id:'rvl1',cat:'rvl',title:'Ungeregelte Kreuzung',arms:'NESW',signs:{},
   cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight'}],
   q:'Du willst geradeaus. Wer fährt zuerst?',
@@ -370,8 +364,8 @@ const SC = [
   cars:[{id:'du',arm:'S',move:'left'},{id:'B',arm:'N',move:'straight'}],
   q:'Grün für dich und den Gegenverkehr. Du willst links. Wer zuerst?',
   opts:[['B',1],['Du – du hast ja Grün',0],['Gleichzeitig',0]],order:[['B'],['du']],
-  ex:'Grün heißt nur „Kreuzung frei“, nicht „Vorrang vor dem Gegenverkehr“. Als Linksabbieger lässt du B durch. Fahr dafür schon in die Kreuzung ein und warte dort, ohne den Gegenverkehr zu behindern. Danach Fußgänger beachten.',
-  tip:'Bei Grün links: einfahren, warten, Gegenverkehr durch, Fußgänger checken.'},
+  ex:'Grün heißt nur „Kreuzung frei“, nicht „Vorrang vor dem Gegenverkehr“. Als Linksabbieger lässt du B durch. Fahr dafür schon in die Kreuzung ein und warte dort, ohne den Gegenverkehr zu behindern.',
+  tip:'Bei Grün links: einfahren, warten, Gegenverkehr durchlassen.'},
 
  {id:'amp4',cat:'ampel',title:'Grünpfeil-Schild',arms:'NESW',signs:{},lights:{S:'red',N:'red',E:'green',W:'green'},gp:'S',
   cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
@@ -393,12 +387,6 @@ const SC = [
   opts:[['A',1],['Du – du bist für A rechts',0],['Wer zuerst da ist',0]],order:[['A'],['du']],
   ex:'Wer aus einem Grundstück, Parkplatz, verkehrsberuhigten Bereich oder über einen abgesenkten Bordstein auf die Straße fährt, muss alle durchlassen (§ 10 StVO). Rechts vor links gilt hier nicht.',
   tip:'Abgesenkter Bordstein = du bist der Letzte.'},
-
- {id:'son2',cat:'sonder',title:'Fußgänger beim Abbiegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],peds:['E'],
-  cars:[{id:'du',arm:'S',move:'right'}],
-  q:'',opts:[],order:[['ped'],['du']],
-  ex:'Beim Abbiegen musst du auf Fußgänger, die die Straße queren, in die du einbiegst, besondere Rücksicht nehmen und wenn nötig warten (§ 9 StVO). Die Vorfahrtstraße ändert daran nichts.',
-  tip:'Beim Abbiegen: Schulterblick + Fußgänger in der Zielstraße.'},
 
  {id:'son3',cat:'sonder',title:'Rettungswagen',hint:'Blaulicht und Martinshorn sind an.',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
   cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight',kind:'rtw'}],
@@ -816,9 +804,9 @@ function showSheet(){
     <div class="signrow">${mini('206')}<span><b>206 Stopp</b> – immer anhalten, dann Vorfahrt gewähren.</span></div>
     <div class="signrow"><svg viewBox="-14 -14 28 28">${zusatzSVG('S',['N','E','S','W'],['S','W'])}</svg><span><b>Zusatzzeichen</b> – dicke Linie = Verlauf der abknickenden Vorfahrtstraße. Wer ihr folgt, blinkt.</span></div>
     <h3>Abknickende Vorfahrt</h3>
-    <ul><li>Wer auf der dicken Linie ist, hat Vorrang vor den Nebenstraßen.</li><li>Nebenstraße gegen Nebenstraße: rechts vor links.</li><li>Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt (auch geradeaus!) und kreuzt, wartet.</li><li>Dem Knick folgen = abbiegen: blinken, Fußgänger beachten.</li></ul>
+    <ul><li>Wer auf der dicken Linie ist, hat Vorrang vor den Nebenstraßen.</li><li>Nebenstraße gegen Nebenstraße: rechts vor links.</li><li>Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt (auch geradeaus!) und kreuzt, wartet.</li><li>Dem Knick folgen = abbiegen: blinken.</li></ul>
     <h3>Abbiegen</h3>
-    <ul><li>Linksabbieger lässt den Gegenverkehr durch – auch auf der Vorfahrtstraße und bei Grün.</li><li>Fußgänger in der Straße, in die du einbiegst: warten, wenn nötig.</li><li>Grünpfeil-Schild: erst anhalten, dann vorsichtig abbiegen.</li></ul>
+    <ul><li>Linksabbieger lässt den Gegenverkehr durch – auch auf der Vorfahrtstraße und bei Grün.</li><li>Grünpfeil-Schild: erst anhalten, dann vorsichtig abbiegen.</li></ul>
     <h3>Du bist immer der Letzte, wenn …</h3>
     <ul><li>du aus einem Grundstück, Parkplatz oder verkehrsberuhigten Bereich kommst,</li><li>du über einen abgesenkten Bordstein fährst,</li><li>Blaulicht + Martinshorn kommt.</li></ul>
     </div>`);
