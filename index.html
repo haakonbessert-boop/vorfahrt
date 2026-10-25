@@ -756,7 +756,7 @@ function answer(o){
   state.answered++; if(ok) state.right++;
   const st = stats[s.id] || {seen:0,right:0};
   st.seen++; if(ok) st.right++; st.last=ok; stats[s.id]=st; save();
-  if(state.cardEl) state.cardEl.innerHTML = fpScene(state.rel) + `<div class="sol-label">Auflösung von oben · ${esc(s.title)}</div>` + scene(state.rel,true);
+  if(state.cardEl) state.cardEl.innerHTML = fpScene(state.rel) + `<div class="sol-label">Auflösung von oben · ${esc(s.title)}${s.cat==='abk'?'<br>Jedes Zusatzzeichen ist aus Sicht seiner eigenen Zufahrt gezeichnet – deshalb sieht es an jeder Ecke anders aus.':''}</div>` + scene(state.rel,true);
   const correct = s.order[0].map(p=>partyLabel(s,p)).join(' oder ');
   addAI(`<div class="verdict ${ok?'ok':'bad'}">${ok?'✓ Richtig':'✗ Nicht ganz'}</div>
     ${ok?'':`<p>Richtig wäre: <b>${esc(correct)}</b></p>`}
