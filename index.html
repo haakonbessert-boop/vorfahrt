@@ -3,966 +3,374 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FAF9F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#262624" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Vorfahrt">
-<title>Vorfahrt-Coach</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Prep Box">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0}img{max-width:100%}</style>
+<title>Prep Box</title>
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <style>
+/* Layout: ruhige Spalte wie der Chat in der Claude-App, Wochen-Liste als Seitenmenü, Ansichten als Umschalter oben. */
 :root{
-  --bg:#FAF9F5;--side:#F3F1EA;--surface:#FFFFFF;--text:#1F1E1D;--muted:#6F6D66;--border:#E6E3DA;
-  --accent:#C96442;--accent-h:#B4553A;--accent-soft:#F6E9E2;--ubub:#EFECE3;
-  --ok:#2F7D4F;--ok-soft:#E4F1E8;--bad:#B5413A;--bad-soft:#F8E5E2;
-  --grass:#DCE2CE;--road:#7A7772;--drive:#A4A19A;--mark:#FAFAF7;--badge:#1F1E1D;
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.06);
-  --serif:"Source Serif 4",ui-serif,Georgia,serif;
-  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#faf9f5; --sidebar:#f3f1ea; --surface:#ffffff; --ink:#141413; --ink-2:#3d3d3a; --muted:#73726c;
+  --line:#e6e3d9; --hover:#efede5; --accent:#c6613f; --accent-fill:#d97757; --accent-soft:#f6e6dd; --on-accent:#ffffff;
+  --ok:#5b7a3a; --warn:#b5651d; --scrim:rgba(20,20,19,.32);
+  --serif:"Geist", -apple-system, system-ui, sans-serif;
+  --sans:"Geist", -apple-system, system-ui, sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r:14px; --r-sm:9px;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#262624;--side:#1F1E1D;--surface:#30302E;--text:#F3F1EA;--muted:#A6A39A;--border:#3E3D3A;
-  --accent:#D97757;--accent-h:#E58A6B;--accent-soft:#3D2E28;--ubub:#3A3936;
-  --ok:#6CC28F;--ok-soft:#24352A;--bad:#E8867C;--bad-soft:#3E2826;
-  --grass:#323A2E;--road:#55534F;--drive:#6B6964;--mark:#E9E8E2;--badge:#F3F1EA;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
-}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#262624; --sidebar:#1f1e1d; --surface:#30302e; --ink:#faf9f5; --ink-2:#e5e3da; --muted:#a6a39a;
+  --line:#3e3e3a; --hover:#383835; --accent:#e08a6c; --accent-fill:#d97757; --accent-soft:#41302a; --on-accent:#1f1e1d;
+  --ok:#9bbd72; --warn:#e5a663; --scrim:rgba(0,0,0,.5); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#262624;--side:#1F1E1D;--surface:#30302E;--text:#F3F1EA;--muted:#A6A39A;--border:#3E3D3A;
-  --accent:#D97757;--accent-h:#E58A6B;--accent-soft:#3D2E28;--ubub:#3A3936;
-  --ok:#6CC28F;--ok-soft:#24352A;--bad:#E8867C;--bad-soft:#3E2826;
-  --grass:#323A2E;--road:#55534F;--drive:#6B6964;--mark:#E9E8E2;--badge:#F3F1EA;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
-}
+  --bg:#262624; --sidebar:#1f1e1d; --surface:#30302e; --ink:#faf9f5; --ink-2:#e5e3da; --muted:#a6a39a;
+  --line:#3e3e3a; --hover:#383835; --accent:#e08a6c; --accent-fill:#d97757; --accent-soft:#41302a; --on-accent:#1f1e1d;
+  --ok:#9bbd72; --warn:#e5a663; --scrim:rgba(0,0,0,.5); color-scheme:dark}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;overflow:hidden;-webkit-font-smoothing:antialiased}
-button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.app{display:flex;height:100dvh}
+[hidden]{display:none!important}
+.hello{font-weight:600!important;letter-spacing:-.02em!important}
+.meal h2,.h-sec,.section h3,.drawer-head h2{font-weight:600!important;letter-spacing:-.01em}
+/* Häkchen rund wie in der Claude-App */
+.item input{appearance:none;-webkit-appearance:none;width:22px;height:22px;border:1.5px solid var(--muted);border-radius:50%;display:grid;place-items:center;cursor:pointer;background:var(--surface)}
+.item input:checked{background:var(--accent-fill);border-color:var(--accent-fill)}
+.item input:checked::after{content:"";width:6px;height:11px;border:solid var(--on-accent);border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.progress{height:4px;border-radius:4px;background:var(--line);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent-fill);transition:width .2s}
+.stepno{font:500 .8rem var(--mono);color:var(--muted);min-width:1.4em;padding-top:2px}
+.item.done .stepno{color:var(--muted)}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+.num,.qty,table td{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent-fill);outline-offset:2px}
 
-/* Sidebar */
-.side{width:272px;flex-shrink:0;background:var(--side);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:12px 10px;gap:2px;overflow-y:auto}
-.brand{display:flex;align-items:center;gap:9px;padding:6px 8px 12px;font-family:var(--serif);font-size:19px;font-weight:600}
-.brand svg{width:24px;height:24px;color:var(--accent)}
-.newbtn{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;border:0;background:transparent;font-weight:500;text-align:left}
-.newbtn .plus{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:17px;line-height:1}
-.newbtn:hover,.navbtn:hover{background:rgba(0,0,0,.05)}
-:root[data-theme="dark"] .newbtn:hover,:root[data-theme="dark"] .navbtn:hover{background:rgba(255,255,255,.06)}
-@media (prefers-color-scheme:dark){.newbtn:hover,.navbtn:hover{background:rgba(255,255,255,.06)}}
-.sec{font-size:12px;color:var(--muted);padding:14px 10px 6px;font-weight:500}
-.navbtn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:8px 10px;border:0;background:transparent;border-radius:9px;text-align:left;font-size:14px}
-.navbtn.active{background:var(--ubub);font-weight:500}
-.navbtn .cnt{font-size:12px;color:var(--muted)}
-.stat{padding:6px 10px}
-.stat .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
-.stat .row span:last-child{color:var(--muted)}
-.bar{height:5px;border-radius:9px;background:var(--border);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--accent);border-radius:9px;transition:width .4s}
-.sidefoot{margin-top:auto;padding:12px 10px 4px;font-size:12px;color:var(--muted);line-height:1.45}
-.linkbtn{border:0;background:none;color:var(--muted);text-decoration:underline;padding:0;font-size:12px}
-.scrim{display:none}
-@media (max-width:860px){
-  .side{position:fixed;inset:0 auto 0 0;z-index:40;transform:translateX(-102%);transition:transform .25s ease;box-shadow:var(--shadow);padding-top:calc(12px + env(safe-area-inset-top))}
-  .side.open{transform:none}
-  .scrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:35}
-}
+/* Kopfleiste */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:620px;margin:0 auto;padding-block:8px 10px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:10px}
+.bar{display:flex;align-items:center;gap:8px;min-width:0}
+.icon-btn{width:38px;height:38px;flex:none;display:grid;place-items:center;border:none;background:none;border-radius:var(--r-sm);cursor:pointer;color:var(--ink-2)}
+.icon-btn:hover{background:var(--hover)}
+.week-btn{flex:1;min-width:0;text-align:left;border:none;background:none;padding:4px 6px;border-radius:var(--r-sm);cursor:pointer;display:grid}
+.week-btn:hover{background:var(--hover)}
+.week-btn b{font:600 1rem/1.25 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.week-btn span{font-size:.82rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kw{font:500 .78rem var(--mono);color:var(--muted);white-space:nowrap}
+.switch{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:3px;background:var(--sidebar);border:1px solid var(--line);border-radius:12px}
+.switch button{border:none;background:none;padding:7px 2px;border-radius:9px;font-size:.88rem;color:var(--muted);cursor:pointer}
+.switch button[aria-selected="true"]{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 
-/* Main */
-.main{flex:1;display:flex;flex-direction:column;min-width:0}
-.top{display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;min-height:52px}
-.iconbtn{width:38px;height:38px;border-radius:10px;border:0;background:transparent;display:grid;place-items:center;color:var(--muted)}
-.iconbtn:hover{background:var(--ubub)}
-.iconbtn svg{width:20px;height:20px}
-.toptitle{flex:1;min-width:0;font-weight:500;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.progress{font-size:13px;color:var(--muted);padding:4px 10px;border:1px solid var(--border);border-radius:99px;white-space:nowrap}
-.desk-hide{display:none}
-@media (max-width:860px){.desk-hide{display:grid}}
+/* Seitenmenü */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:20}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(320px,86vw);background:var(--sidebar);border-right:1px solid var(--line);z-index:21;display:flex;flex-direction:column;gap:4px;padding-top:calc(env(safe-area-inset-top,0px) + 12px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px);padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:10px;overflow-y:auto}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 4px 8px 8px}
+.drawer-head h2{font:500 1.25rem var(--serif);margin:0}
+.d-label{font-size:.75rem;color:var(--muted);padding:12px 10px 4px;font-weight:500}
+.d-item{border:none;background:none;text-align:left;padding:9px 10px;border-radius:var(--r-sm);cursor:pointer;display:grid;gap:1px}
+.d-item:hover{background:var(--hover)}
+.d-item[aria-current="true"]{background:var(--hover)}
+.d-item b{font-weight:500;font-size:.95rem}
+.d-item span{font-size:.8rem;color:var(--muted)}
+.free{display:grid;gap:8px;padding:6px 10px}
+.free label{display:grid;gap:4px;font-size:.8rem;color:var(--muted)}
+select{font:.95rem var(--sans);padding:9px 10px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+@media (prefers-reduced-motion:no-preference){.drawer{animation:slide .2s ease-out}.scrim{animation:fade .2s}}
+@keyframes slide{from{transform:translateX(-100%)}}
+@keyframes fade{from{opacity:0}}
 
-.chat{flex:1;overflow-y:auto;padding:8px 16px 28px;-webkit-overflow-scrolling:touch}
-.inner{max-width:720px;margin:0 auto}
-.msg{margin:20px 0;animation:rise .3s ease both}
-@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.msg.ai{display:flex;gap:12px}
-.avatar{width:28px;height:28px;flex-shrink:0;color:var(--accent);margin-top:1px}
-.msg.ai .body{flex:1;min-width:0;font-family:var(--serif);font-size:16.5px;line-height:1.6}
-.msg.ai .body p{margin:0 0 10px}
-.msg.ai .body p:last-child{margin-bottom:0}
-.label{font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-bottom:8px;letter-spacing:.01em}
-.msg.user{display:flex;justify-content:flex-end}
-.bubble{background:var(--ubub);padding:10px 15px;border-radius:18px;max-width:82%;line-height:1.45}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin:2px 0 14px}
-.card .scene{display:block;width:100%;max-width:440px;height:auto;margin:0 auto}
-.legend{font-family:var(--sans);font-size:12px;color:var(--muted);padding:8px 14px 10px;border-top:1px solid var(--border);display:flex;gap:14px;flex-wrap:wrap}
-.verdict{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-weight:600;font-size:14px;padding:5px 11px;border-radius:99px;margin-bottom:10px}
-.verdict.ok{background:var(--ok-soft);color:var(--ok)}
-.verdict.bad{background:var(--bad-soft);color:var(--bad)}
-.tip{font-family:var(--sans);font-size:14px;background:var(--accent-soft);border-radius:12px;padding:10px 13px;margin-top:12px;line-height:1.45}
-.tip b{color:var(--accent)}
-.sheet h3{font-family:var(--serif);font-size:17px;margin:18px 0 6px;font-weight:600}
-.sheet h3:first-child{margin-top:0}
-.sheet ol,.sheet ul{margin:0 0 8px;padding-left:22px}
-.sheet li{margin:3px 0}
-.signrow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:15.5px}
-.signrow svg{width:30px;height:30px;flex-shrink:0}
+/* Inhalt */
+.wrap{max-width:620px;margin:0 auto;padding-block:22px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.hello{font:400 clamp(1.6rem,6vw,2rem)/1.2 var(--serif);letter-spacing:-.01em;color:var(--ink)}
+.hello em{font-style:normal;color:var(--accent)}
+.lead{color:var(--muted);margin:6px 0 0;font-size:.95rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.meal{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 16px;border-top:1px solid var(--line)}
+.meal:first-child{border-top:none}
+.meal > div{min-width:0}
+.meal-label{font-size:.78rem;color:var(--muted)}
+.meal h2{font:500 1.12rem/1.3 var(--serif);margin-top:1px}
+.meal .macro{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;font:400 .86rem var(--mono);color:var(--ink-2)}
+.macro .p{color:var(--accent);font-weight:500}
+.count{font:500 1.05rem var(--mono);color:var(--ink-2);text-align:right;white-space:nowrap}
+.count small{display:block;font:.72rem var(--sans);color:var(--muted)}
+.copy{margin-left:auto;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:3px 9px;font:500 .78rem var(--sans);color:var(--ink-2);cursor:pointer}
+.copy:hover{background:var(--hover)}
+.h-sec{font:500 1.05rem var(--serif);margin-bottom:8px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:right;padding:10px 14px;border-top:1px solid var(--line)}
+thead th{border-top:none;font:500 .75rem var(--sans);color:var(--muted)}
+th:first-child,td:first-child{text-align:left;font-family:var(--sans)}
+.st{display:inline-flex;align-items:center;gap:6px;font:.8rem var(--sans);color:var(--muted);white-space:nowrap}
+.st::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.st.warn::before{background:var(--warn)}
+.note{font-size:.84rem;color:var(--muted);margin:0}
+.ver{text-align:center;font:.75rem var(--mono);color:var(--muted);padding:0 16px calc(24px + env(safe-area-inset-bottom,0px))}
 
-/* Welcome */
-.welcome{min-height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px 4px 40px}
-.welcome .mark{width:44px;height:44px;color:var(--accent);margin-bottom:14px}
-.welcome h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,6vw,38px);line-height:1.15;margin:0 0 10px;letter-spacing:-.01em}
-.welcome p{color:var(--muted);margin:0 0 26px;max-width:460px;line-height:1.5}
-.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:560px}
-.chip{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:9px 13px;font-size:14px;display:inline-flex;gap:7px;align-items:center}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-
-/* Composer */
-.composer{padding:6px 16px calc(12px + env(safe-area-inset-bottom))}
-.cbox{max-width:720px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:8px}
-.cbox:empty{display:none}
-.chint{font-size:12.5px;color:var(--muted);padding:4px 8px 2px}
-.opt{display:flex;width:100%;text-align:left;gap:11px;align-items:center;padding:11px 12px;border:1px solid transparent;border-radius:14px;background:transparent;margin:2px 0;line-height:1.35}
-.opt:hover{background:var(--ubub)}
-.opt:active{transform:scale(.99)}
-.opt .k{width:24px;height:24px;flex-shrink:0;border-radius:7px;border:1px solid var(--border);display:grid;place-items:center;font-size:12px;color:var(--muted);font-weight:500}
-.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
-.primary{background:var(--accent);color:#fff;border:0;border-radius:14px;padding:11px 18px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
-.primary:hover{background:var(--accent-h)}
-.ghost{background:transparent;border:1px solid var(--border);border-radius:14px;padding:11px 16px}
-.ghost:hover{background:var(--ubub)}
-.foot{text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px}
-
-/* SVG scene */
-.grass{fill:var(--grass)}.road{fill:var(--road)}.drive{fill:var(--drive)}
-.cl{stroke:var(--mark);stroke-width:1.6;stroke-dasharray:9 7}
-.sl{stroke:var(--mark);stroke-width:3}
-.sl.dash{stroke-dasharray:4 3;stroke-width:2.6}
-.curb{stroke:var(--mark);stroke-width:2.2;stroke-dasharray:3 3;opacity:.8}
-.zebra{fill:var(--mark)}
-.mainhl{stroke:#F4C20D;stroke-width:56;fill:none;opacity:.38;stroke-linejoin:round}
-.blink{fill:#FFB020;animation:blink .9s steps(1) infinite}
-.blue{fill:#2D7CF6;animation:blink .5s steps(1) infinite}
-.blue.b2{animation-delay:.25s}
-@keyframes blink{50%{opacity:.12}}
-.badge circle{fill:var(--badge)}.badge text{fill:var(--bg);font:700 11px var(--sans);text-anchor:middle}
-.clabel{font:700 10px var(--sans);fill:#fff;text-anchor:middle;pointer-events:none}
-.tlabel{font:500 9px var(--sans);fill:var(--muted);text-anchor:middle}
-.parties{display:flex;flex-wrap:wrap;gap:8px;padding:6px 4px 4px}
-.party{flex:1 1 30%;min-width:96px;display:flex;align-items:center;justify-content:center;gap:9px;padding:14px 12px;border:1px solid var(--border);border-radius:14px;background:transparent;font-weight:600;font-size:16px}
-.party:hover{background:var(--ubub)}.party:active{transform:scale(.97)}
-.party i{width:12px;height:12px;border-radius:50%;display:inline-block}
-.tap{cursor:pointer}
-.party.picked{border-color:var(--accent);background:var(--accent-soft)}
-.party .num{margin-left:4px;min-width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;display:inline-grid;place-items:center}
-.party.yn{font-size:17px;padding:16px 12px}
-.ghost.small{padding:7px 12px;font-size:13px;margin-top:4px}
-.hint{font-family:var(--sans);font-size:14px;color:var(--muted)}
-.blinkg{fill:#2ECC71;animation:blink .9s steps(1) infinite}
-:root{--sky1:#BBD6EA;--sky2:#E8F0F3;--trees:#A7B897;--walk:#CDC9C0;--hedge:#8CA27B}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sky1:#1C2632;--sky2:#323E48;--trees:#2A3326;--walk:#5E5C57;--hedge:#2F3B2A}}
-:root[data-theme="dark"]{--sky1:#1C2632;--sky2:#323E48;--trees:#2A3326;--walk:#5E5C57;--hedge:#2F3B2A}
-.trees{fill:var(--trees)}.walk{fill:var(--walk)}.hedge{fill:var(--hedge)}.mkf{fill:var(--mark)}.curbfp{fill:var(--mark);opacity:.7}
-.card .scene.fp{max-width:560px}
-.sol-label{font-family:var(--sans);font-size:12.5px;color:var(--muted);padding:9px 14px 4px;border-top:1px solid var(--border)}
-@media (prefers-reduced-motion:reduce){.blink,.blinkg,.blue,.msg{animation:none}}
+/* Einkauf, Prep, Rezepte (Grundstil, Feinschliff folgt) */
+.section{display:grid;gap:12px}
+.section > .bar{justify-content:space-between;flex-wrap:wrap}
+.section h3{font:500 1.05rem var(--serif)}
+.reset{border:none;background:none;color:var(--accent);font-size:.88rem;cursor:pointer;padding:4px 0}
+.group{display:grid;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.eyebrow{font-size:.75rem;color:var(--muted);font-weight:500;padding:10px 14px 4px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
+.eyebrow + .item{border-top:none}
+.item input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--accent-fill);flex:none}
+.item .what{flex:1;min-width:0}
+.item .qty{font-size:.88rem;white-space:nowrap;color:var(--ink-2)}
+.item .need{display:block;font-size:.78rem;color:var(--muted)}
+.item.done .what,.item.done .qty{text-decoration:line-through;color:var(--muted)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+summary{cursor:pointer;font-weight:500}
+details[open] summary{margin-bottom:8px}
+ul.plain{margin:0;padding-left:1.2em;display:grid;gap:4px}
+.macros{display:flex;gap:12px;flex-wrap:wrap;font:.86rem var(--mono)}
+.chip.p{color:var(--accent)}
+.ing{display:grid;grid-template-columns:1fr auto auto;gap:3px 14px;font-size:.9rem}
+.ing span:nth-child(3n+2),.ing span:nth-child(3n){text-align:right;font-family:var(--mono);font-size:.84rem}
+.ing .h{font:500 .72rem var(--sans)!important;color:var(--muted)}
 </style>
+
 </head>
 <body>
-<div class="app">
-  <aside class="side" id="side">
-    <div class="brand"><span id="brandIcon"></span>Vorfahrt-Coach</div>
-    <button class="newbtn" id="newBtn"><span class="plus">+</span>Neues Training</button>
-    <div class="sec">Kategorien</div>
-    <nav id="nav"></nav>
-    <div class="sec">Dein Stand</div>
-    <div id="stats"></div>
-    <div class="sec">Hilfe</div>
-    <button class="navbtn" id="sheetBtn">Spickzettel: Wer hat Vorfahrt?</button>
-    <div class="sidefoot">Fortschritt wird nur in diesem Browser gespeichert.<br><button class="linkbtn" id="resetBtn">Fortschritt zurücksetzen</button></div>
-  </aside>
-  <div class="scrim" id="scrim"></div>
-  <main class="main">
-    <header class="top">
-      <button class="iconbtn desk-hide" id="menuBtn" aria-label="Menü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
-      <div class="toptitle" id="topTitle">Vorfahrt-Coach</div>
-      <span class="progress" id="progress" hidden></span>
-      <button class="iconbtn desk-hide" id="newBtn2" aria-label="Neues Training"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
-    </header>
-    <div class="chat" id="chat"><div class="inner" id="inner"></div></div>
-    <div class="composer"><div class="cbox" id="cbox"></div><div class="foot">Lernhilfe – ersetzt keine Fahrstunde. Im Zweifel gilt die StVO.</div></div>
-  </main>
-</div>
+<header class="top"><div class="top-in">
+  <div class="bar">
+    <button class="icon-btn" id="openMenu" aria-label="Woche wählen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5.5h14M3 10h14M3 14.5h9"/></svg></button>
+    <button class="week-btn" id="weekBtn"><b id="wTitle"></b><span id="wSub"></span></button>
+    <span class="kw" id="kw"></span>
+  </div>
+  <div class="switch" role="tablist" aria-label="Ansicht">
+    <button role="tab" data-tab="woche">Woche</button>
+    <button role="tab" data-tab="einkauf">Einkauf</button>
+    <button role="tab" data-tab="prep">Prep</button>
+    <button role="tab" data-tab="rezepte">Rezepte</button>
+  </div>
+</div></header>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Wochen">
+  <div class="drawer-head"><h2>Prep Box</h2><button class="icon-btn" id="closeMenu" aria-label="Schließen"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg></button></div>
+  <div class="d-label">Rotation</div>
+  <div id="dWeeks" style="display:grid;gap:2px"></div>
+  <div class="d-label">Eigene Kombination</div>
+  <button class="d-item" data-w="frei" id="dFree"><b>Frei wählen</b><span>Mittag und Abendessen selbst kombinieren</span></button>
+  <div class="free" id="freePick" hidden>
+    <label for="selSalat">Mittag (5 Boxen)<select id="selSalat"></select></label>
+    <label for="selAbend">Abendessen (5 Portionen)<select id="selAbend"></select></label>
+  </div>
+</aside>
+
+<main class="wrap" id="view"></main>
+<footer class="ver">Version 1.0.0</footer>
 
 <script>
-/* ---------- Icon (Lenkrad) ---------- */
-const WHEEL = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M3.6 10.2c2.6-.9 5.4-1.3 8.4-1.3s5.8.4 8.4 1.3M10.4 13.8 7 20M13.6 13.8 17 20"/></svg>`;
-document.getElementById('brandIcon').innerHTML = WHEEL;
+const REZ = {"_info": "Aufbau-Profil (zweite Person). Mengen pro Portion in der Basiseinheit der Zutat (g bzw. ml; Eier, Wraps, Gewürzgurken, Limette in Stück). Ein dritter Wert [zutat, menge, anzahl] heißt: nur für so viele Portionen (Freitags-Box mit gegartem Hähnchen aus der Packung, weil Sonntag gegartes Fleisch nur bis Donnerstag hält). Makros werden von make.py aus zutaten.json berechnet. Quelle: Second Brain, Ernährungsplan Aufbau-Rotation v6, 2026-11-01.", "ui": {"app_name": "Prep Box", "storage": "mpa.", "cache": "prep-box-v", "lead": "Samstag Einkauf, Sonntag Prep der Mittags-Boxen, abends kochst du in 15 Minuten frisch. Werte pro Portion, so wie du sie in die Tracking-App einträgst.", "label_salat": "Mittag", "when_salat": "Mo–Fr, Box aus dem Kühlschrank", "when_abend": "Mo–Fr, abends frisch", "frei_salat": "Mittag (5 Boxen)", "frei_text": "Mittag und Abendessen selbst kombinieren", "einkauf_note": "Alles für Mo–Fr wird am Samstag gekauft. Kein Tiefkühler: Rohes Fleisch nur für die Boxen, die am Sonntag gekocht werden. Abends nur Zutaten, die ungeöffnet bis Freitag halten.", "frisch_titel": "Boxen sicher und frisch halten", "frei_prep": "Sonntag: Mittags-Boxen für Mo–Fr vorbereiten, Hähnchen für Mo–Do braten, Freitag mit gegartem Hähnchen aus der Packung.", "tiefkuehl": false}, "ziele": {"kcal_min": 2400, "kcal_max": 2500, "kcal_tag": 2450, "protein_tag": 130}, "rhythmus": {"einkauf": "Samstag", "prep": "Sonntag"}, "salat_regeln": ["Gekochte Nudeln und Hähnchen nach dem Kochen flach ausbreiten, abkühlen lassen und innerhalb von 2 Stunden in den Kühlschrank.", "Am Sonntag gebratenes Hähnchen hält bis Donnerstag. Die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung (erst Freitagmorgen öffnen).", "Knuspriges (Chips, Speck) und Dressings in ein Extra-Döschen, erst beim Essen dazu.", "Boxen hinten in den Kühlschrank stellen, nicht in die Tür."], "rezepte": [{"id": "mittag-nudelsalat", "name": "Klassischer Nudelsalat mit Hähnchen", "kurz": "Nudelsalat", "typ": "salat", "portionen": 5, "zutaten": [["nudeln", 150], ["haehnchen", 200, 4], ["haehnchen_gegart", 150, 1], ["oel", 5], ["eier", 1], ["gouda", 40], ["mais", 80], ["gewuerzgurken", 2], ["paprika", 90], ["fruehlingszwiebel", 0.2], ["mayo", 50], ["griech_joghurt", 50], ["gewuerze", 0]], "hinweis": "Nudeln bissfest kochen, kalt abspülen. Hähnchen würfeln und braten. Dressing: Mayo, Joghurt, etwas Gurkenwasser, Salz, Pfeffer. Ei hart kochen, Gouda und Gurken würfeln.", "makros": {"kcal": 1420, "protein": 89, "fett": 58}}, {"id": "mittag-pesto", "name": "Pesto-Pasta-Salat mit Hähnchen und Mozzarella", "kurz": "Pesto-Pasta", "typ": "salat", "portionen": 5, "zutaten": [["nudeln", 150], ["haehnchen", 200, 4], ["haehnchen_gegart", 150, 1], ["oel", 5], ["pesto", 60], ["mozzarella_mini", 60], ["getr_tomaten", 30], ["pinienkerne", 10], ["cocktailtomaten", 100], ["gewuerze", 0]], "hinweis": "Nudeln kochen, mit Pesto mischen, solange sie warm sind. Hähnchen braten, in Streifen. Tomaten halbieren, getrocknete Tomaten schneiden, Pinienkerne ohne Öl rösten.", "makros": {"kcal": 1350, "protein": 82, "fett": 60}}, {"id": "mittag-texmex", "name": "Tex-Mex-Nudelsalat mit Hähnchen", "kurz": "Tex-Mex-Nudeln", "typ": "salat", "portionen": 5, "zutaten": [["nudeln", 150], ["haehnchen", 200, 4], ["haehnchen_gegart", 150, 1], ["oel", 5], ["kidneybohnen", 100], ["mais", 80], ["cheddar", 40], ["salsa", 50], ["schmand", 40], ["paprika", 90], ["limette", 0.2], ["tortilla_chips", 25], ["gewuerze", 0]], "hinweis": "Hähnchen mit Taco-Gewürz braten. Nudeln, Bohnen, Mais, Paprika, Salsa und Schmand mischen, Limettensaft dazu. Cheddar drüber, Chips separat.", "makros": {"kcal": 1380, "protein": 89, "fett": 40}}, {"id": "mittag-caesar", "name": "Chicken-Caesar-Nudelsalat", "kurz": "Caesar-Nudeln", "typ": "salat", "portionen": 5, "zutaten": [["nudeln", 150], ["haehnchen", 200, 4], ["haehnchen_gegart", 150, 1], ["oel", 5], ["eier", 2], ["parmesan", 40], ["speck", 30], ["roemersalat", 100], ["cocktailtomaten", 100], ["caesar_dressing", 40], ["gewuerze", 0]], "hinweis": "Farfalle kochen. Hähnchen braten, Speck knusprig auslassen. Eier hart kochen. Römersalat ganz lassen und erst morgens schneiden, Dressing separat.", "makros": {"kcal": 1390, "protein": 101, "fett": 56}}, {"id": "abend-schuettelpizza", "name": "Schüttelpizza mit Schinken", "kurz": "Schüttelpizza", "typ": "abend", "portionen": 5, "zutaten": [["mehl", 100], ["eier", 2], ["milch", 100], ["passierte_tomaten", 80], ["kochschinken", 125], ["mais", 50], ["paprika", 90], ["pizzakaese", 75], ["gewuerze", 0]], "hinweis": "Mehl, Eier, Milch, Salz und Oregano in einer Dose kräftig schütteln, auf ein Blech mit Backpapier gießen. Tomatensauce, Schinken, Mais, Paprika, Käse drauf. 200 °C, ca. 20 min.", "makros": {"kcal": 1030, "protein": 73, "fett": 40}}, {"id": "abend-tortellini", "name": "Tortellini-Pfanne mit Schinken und Tomaten", "kurz": "Tortellini", "typ": "abend", "portionen": 5, "zutaten": [["tortellini", 250], ["kochschinken", 100], ["cocktailtomaten", 150], ["kochsahne", 100], ["parmesan", 15], ["gewuerze", 0]], "hinweis": "Schinken anbraten, Tomaten halbieren und kurz mitbraten. Sahne und einen Schuss Wasser dazu, Tortellini direkt darin 4–5 min garen. Parmesan drüber.", "makros": {"kcal": 1060, "protein": 56, "fett": 41}}, {"id": "abend-kaesespaetzle", "name": "Käsespätzle mit Schinken", "kurz": "Käsespätzle", "typ": "abend", "portionen": 5, "zutaten": [["spaetzle", 350], ["kochschinken", 100], ["emmentaler", 60], ["sahne", 40], ["roestzwiebeln", 15], ["gewuerze", 0]], "hinweis": "Spätzle und Schinken in der Pfanne anbraten, Sahne dazu, Käse unterheben und schmelzen lassen. Röstzwiebeln drüber.", "makros": {"kcal": 1120, "protein": 59, "fett": 47}}, {"id": "abend-quesadillas", "name": "Hähnchen-Quesadillas", "kurz": "Quesadillas", "typ": "abend", "portionen": 5, "zutaten": [["wraps", 3], ["haehnchen_gegart", 150], ["cheddar", 60], ["kidneybohnen", 80], ["mais", 50], ["salsa", 50], ["gewuerze", 0]], "hinweis": "Wraps halbseitig mit Hähnchen, Bohnen, Mais und Cheddar belegen, zuklappen. In der Pfanne ohne Öl je Seite 2–3 min knusprig braten. Salsa zum Dippen.", "makros": {"kcal": 1110, "protein": 71, "fett": 38}}], "rotation": [{"woche": 1, "salat": "mittag-nudelsalat", "abend": "abend-schuettelpizza", "prep_minuten": 45, "prep": ["750 g Nudeln bissfest kochen, kalt abspülen. 5 Eier hart kochen.", "800 g Hähnchen würfeln, mit Salz und Paprika in Öl braten, flach abkühlen lassen.", "Dressing anrühren: Mayo, griechischer Joghurt, etwas Gurkenwasser, Salz, Pfeffer.", "Gouda, Gewürzgurken, Paprika und Frühlingszwiebeln klein schneiden, Mais abtropfen.", "Alles mischen und auf 5 Boxen verteilen. Hähnchen nur in 4 Boxen (Mo–Do), die Freitags-Box ohne Fleisch.", "Freitagmorgen: Packung gegarte Hähnchenstreifen öffnen und in die letzte Box geben."]}, {"woche": 2, "salat": "mittag-pesto", "abend": "abend-tortellini", "prep_minuten": 40, "prep": ["750 g Fusilli bissfest kochen, abgießen und warm mit dem Pesto mischen.", "800 g Hähnchen braten, in Streifen schneiden, flach abkühlen lassen.", "Pinienkerne ohne Öl rösten, Cocktailtomaten halbieren, getrocknete Tomaten schneiden, Mozzarella abtropfen.", "Auf 5 Boxen verteilen. Hähnchen nur in 4 Boxen (Mo–Do).", "Freitagmorgen: gegarte Hähnchenstreifen aus der Packung in die letzte Box."]}, {"woche": 3, "salat": "mittag-texmex", "abend": "abend-kaesespaetzle", "prep_minuten": 40, "prep": ["750 g Nudeln bissfest kochen, kalt abspülen.", "800 g Hähnchen mit Taco-Gewürz in Öl braten, flach abkühlen lassen.", "Bohnen und Mais abtropfen, Paprika würfeln. Mit Nudeln, Salsa, Schmand und Limettensaft mischen.", "Auf 5 Boxen verteilen, Cheddar drüber. Hähnchen nur in 4 Boxen (Mo–Do). Chips in 5 kleine Beutel.", "Freitagmorgen: gegarte Hähnchenstreifen aus der Packung in die letzte Box."]}, {"woche": 4, "salat": "mittag-caesar", "abend": "abend-quesadillas", "prep_minuten": 40, "prep": ["750 g Farfalle bissfest kochen, kalt abspülen. 10 Eier hart kochen.", "800 g Hähnchen braten, Speck knusprig auslassen, beides flach abkühlen lassen.", "Parmesan hobeln, Cocktailtomaten halbieren. Römersalat ganz lassen.", "Nudeln, Tomaten, Eier und Parmesan auf 5 Boxen verteilen, Hähnchen nur in 4 Boxen (Mo–Do). Speck und Dressing in Extra-Döschen.", "Morgens: Salat schneiden und dazu. Freitag: gegarte Hähnchenstreifen aus der Packung."]}]};
+const ZUT = {"_info": "Zutaten-Stammdaten Aufbau-Profil. Nährwerte = Standardwerte pro 100 g/ml bzw. pro Stück, vor dem Start mit der Tracking-App abgleichen. Kein Tiefkühler: nichts aus der Tiefkühltruhe.", "paprika": {"name": "Paprika", "abteilung": "Obst & Gemüse", "packung": {"einheit": "Stück", "menge": 180}, "naehrwerte": {"basis": "100 g", "kcal": 31, "protein": 1, "fett": 0.3}}, "fruehlingszwiebel": {"name": "Frühlingszwiebeln", "abteilung": "Obst & Gemüse", "packung": {"einheit": "Bund", "menge": 1}, "naehrwerte": {"basis": "Bund", "kcal": 32, "protein": 1.8, "fett": 0.2}}, "cocktailtomaten": {"name": "Cocktailtomaten", "abteilung": "Obst & Gemüse", "packung": {"einheit": "Schale 250 g", "menge": 250}, "naehrwerte": {"basis": "100 g", "kcal": 19, "protein": 0.9, "fett": 0.3}}, "roemersalat": {"name": "Römersalatherzen", "abteilung": "Obst & Gemüse", "packung": {"einheit": "Pck.", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 17, "protein": 1.2, "fett": 0.3}}, "limette": {"name": "Limette", "abteilung": "Obst & Gemüse", "packung": {"einheit": "Stück", "menge": 1}, "naehrwerte": {"basis": "Stück", "kcal": 6, "protein": 0.1, "fett": 0}, "stueck": true}, "haehnchen": {"name": "Hähnchenbrust frisch", "abteilung": "Kühltheke", "packung": {"einheit": "× 500 g", "menge": 500}, "naehrwerte": {"basis": "100 g", "kcal": 105, "protein": 23.5, "fett": 1.2}}, "haehnchen_gegart": {"name": "Hähnchenbrust-Streifen gegart (vakuumiert)", "abteilung": "Kühltheke", "packung": {"einheit": "× 150 g", "menge": 150}, "naehrwerte": {"basis": "100 g", "kcal": 115, "protein": 22, "fett": 2.5}}, "kochschinken": {"name": "Kochschinken-Würfel", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 g", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 110, "protein": 19, "fett": 3.5}}, "speck": {"name": "Speckwürfel", "abteilung": "Kühltheke", "packung": {"einheit": "× 150 g", "menge": 150}, "naehrwerte": {"basis": "100 g", "kcal": 310, "protein": 15, "fett": 28}}, "eier": {"name": "Eier", "abteilung": "Kühltheke", "packung": {"einheit": "Stück", "menge": 1}, "naehrwerte": {"basis": "Stück", "kcal": 81, "protein": 7.5, "fett": 5.5}, "haltbar": true, "stueck": true}, "gouda": {"name": "Gouda am Stück", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 g", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 360, "protein": 25, "fett": 28}}, "mozzarella_mini": {"name": "Mini-Mozzarella", "abteilung": "Kühltheke", "packung": {"einheit": "× 125 g", "menge": 125}, "naehrwerte": {"basis": "100 g", "kcal": 250, "protein": 18, "fett": 19}}, "cheddar": {"name": "Cheddar gerieben", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 g", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 400, "protein": 25, "fett": 33}}, "emmentaler": {"name": "Emmentaler gerieben", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 g", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 380, "protein": 28, "fett": 30}}, "pizzakaese": {"name": "Pizzakäse gerieben", "abteilung": "Kühltheke", "packung": {"einheit": "× 250 g", "menge": 250}, "naehrwerte": {"basis": "100 g", "kcal": 320, "protein": 23, "fett": 25}}, "parmesan": {"name": "Parmesan/Grana am Stück", "abteilung": "Kühltheke", "packung": {"einheit": "× 150 g", "menge": 150}, "naehrwerte": {"basis": "100 g", "kcal": 390, "protein": 33, "fett": 28}, "haltbar": true}, "griech_joghurt": {"name": "Griechischer Joghurt 10 %", "abteilung": "Kühltheke", "packung": {"einheit": "× 500 g", "menge": 500}, "naehrwerte": {"basis": "100 g", "kcal": 120, "protein": 5.5, "fett": 10}}, "schmand": {"name": "Schmand", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 g", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 240, "protein": 2.7, "fett": 24}}, "kochsahne": {"name": "Kochsahne 15 % (H)", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 ml", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 165, "protein": 3, "fett": 15}}, "sahne": {"name": "Schlagsahne", "abteilung": "Kühltheke", "packung": {"einheit": "× 200 ml", "menge": 200}, "naehrwerte": {"basis": "100 g", "kcal": 290, "protein": 2.4, "fett": 30}}, "tortellini": {"name": "Tortellini mit Käse (Kühlregal)", "abteilung": "Kühltheke", "packung": {"einheit": "× 250 g", "menge": 250}, "naehrwerte": {"basis": "100 g", "kcal": 280, "protein": 11, "fett": 7}}, "spaetzle": {"name": "Spätzle (Kühlregal)", "abteilung": "Kühltheke", "packung": {"einheit": "× 500 g", "menge": 500}, "naehrwerte": {"basis": "100 g", "kcal": 165, "protein": 6, "fett": 2}}, "nudeln": {"name": "Nudeln (Spirelli, Fusilli, Farfalle)", "abteilung": "Konserven & Trocken", "packung": {"einheit": "× 500 g", "menge": 500}, "naehrwerte": {"basis": "100 g", "kcal": 355, "protein": 12, "fett": 1.5}, "haltbar": true}, "wraps": {"name": "Weizen-Wraps", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Pck. à 6", "menge": 6}, "naehrwerte": {"basis": "Stück", "kcal": 185, "protein": 5, "fett": 4.5}, "stueck": true}, "mais": {"name": "Mais (Dose)", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Dose", "menge": 285}, "naehrwerte": {"basis": "100 g", "kcal": 80, "protein": 2.5, "fett": 1.2}}, "kidneybohnen": {"name": "Kidneybohnen (Dose)", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Dose", "menge": 250}, "naehrwerte": {"basis": "100 g", "kcal": 108, "protein": 7.5, "fett": 0.6}}, "gewuerzgurken": {"name": "Gewürzgurken", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Glas", "menge": 15}, "naehrwerte": {"basis": "Stück", "kcal": 5, "protein": 0.2, "fett": 0}, "haltbar": true, "stueck": true}, "pesto": {"name": "Pesto Genovese", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Glas", "menge": 190}, "naehrwerte": {"basis": "100 g", "kcal": 450, "protein": 5, "fett": 45}}, "getr_tomaten": {"name": "Getrocknete Tomaten in Öl", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Glas", "menge": 170}, "naehrwerte": {"basis": "100 g", "kcal": 200, "protein": 4, "fett": 15}}, "pinienkerne": {"name": "Pinienkerne", "abteilung": "Konserven & Trocken", "packung": {"einheit": "× 50 g", "menge": 50}, "naehrwerte": {"basis": "100 g", "kcal": 670, "protein": 14, "fett": 68}, "haltbar": true}, "salsa": {"name": "Salsa-Dip", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Glas", "menge": 300}, "naehrwerte": {"basis": "100 g", "kcal": 35, "protein": 1.5, "fett": 0.3}}, "tortilla_chips": {"name": "Tortilla-Chips", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Beutel", "menge": 175}, "naehrwerte": {"basis": "100 g", "kcal": 490, "protein": 7, "fett": 24}}, "caesar_dressing": {"name": "Caesar-Dressing", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Flasche", "menge": 250}, "naehrwerte": {"basis": "100 g", "kcal": 380, "protein": 2, "fett": 38}}, "mayo": {"name": "Salatmayonnaise", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Glas", "menge": 250}, "naehrwerte": {"basis": "100 g", "kcal": 480, "protein": 1, "fett": 50}, "haltbar": true}, "passierte_tomaten": {"name": "Passierte Tomaten", "abteilung": "Konserven & Trocken", "packung": {"einheit": "× 500 g", "menge": 500}, "naehrwerte": {"basis": "100 g", "kcal": 25, "protein": 1.3, "fett": 0.2}}, "milch": {"name": "H-Milch 3,5 %", "abteilung": "Konserven & Trocken", "packung": {"einheit": "× 1 l", "menge": 1000}, "naehrwerte": {"basis": "100 g", "kcal": 64, "protein": 3.4, "fett": 3.5}}, "roestzwiebeln": {"name": "Röstzwiebeln", "abteilung": "Konserven & Trocken", "packung": {"einheit": "Becher", "menge": 150}, "naehrwerte": {"basis": "100 g", "kcal": 600, "protein": 6, "fett": 42}, "haltbar": true}, "mehl": {"name": "Mehl", "abteilung": "Vorrat", "packung": {"einheit": "g", "menge": 1}, "naehrwerte": {"basis": "100 g", "kcal": 340, "protein": 10, "fett": 1}, "vorrat": true}, "oel": {"name": "Öl", "abteilung": "Vorrat", "packung": {"einheit": "g", "menge": 1}, "naehrwerte": {"basis": "100 g", "kcal": 900, "protein": 0, "fett": 100}, "vorrat": true}, "gewuerze": {"name": "Gewürze (Salz, Pfeffer, Paprika, Oregano, Taco)", "abteilung": "Vorrat", "vorrat": true}};
+// Texte und Rhythmus je Profil (Standard = Haakons App, data-aufbau/ überschreibt sie)
+const UI = Object.assign({
+  storage: "mp.",
+  lead: "Montagmorgen Einkauf und Salat-Prep, abends kochst du frisch. Pro Portion, so wie du es in die Tracking-App einträgst.",
+  label_salat: "Salat", when_salat: "Mo–Fr, 15 Uhr, Box",
+  label_abend: "Abendessen", when_abend: "Mo–Fr, abends frisch",
+  einkauf_note: "Die Mengen gehen in ganzen Packungen auf: Frisches ist bis Freitag aufgebraucht. Übrig bleiben dürfen nur haltbare Sachen wie TK-Gemüse, Gewürzgurken oder Parmesan.",
+  frisch_titel: "Salat frisch halten",
+  frei_prep: null,
+  tiefkuehl: true
+}, REZ.ui || {});
 
-/* ---------- Kategorien ---------- */
-const CATS = {
-  vs:   'Vorfahrtstraße & Schilder',
-  abk:  'Abknickende Vorfahrt',
-  rvl:  'Rechts vor links',
-  ampel:'Ampel & Polizei',
-  fuss:'Fußgänger',
-  sonder:'Sonderfälle'
+const byId = Object.fromEntries(REZ.rezepte.map(r => [r.id, r]));
+const salate = REZ.rezepte.filter(r => r.typ === "salat");
+const abende = REZ.rezepte.filter(r => r.typ === "abend");
+const ABT = ["Obst & Gemüse", "Kühltheke", "Konserven & Trocken", "Tiefkühl"];
+
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(UI.storage + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(UI.storage + k, JSON.stringify(v)); } catch {} }
 };
+let state = Object.assign({ wahl: 1, salat: salate[0].id, abend: abende[0].id, tab: "woche" }, store.get("state", {}));
+const save = () => store.set("state", state);
 
-/* ---------- Situationen ----------
-   arms: vorhandene Straßen (N/E/S/W), signs: Schilder je Zufahrt ('z' = Zusatzzeichen abknickende Vorfahrt),
-   main: Verlauf der Vorfahrtstraße (für die Auflösung), cars: arm + move (straight/left/right),
-   order: Auflösung in Gruppen (gleiche Gruppe = gleichzeitig). */
-const SC = [
- {id:'vs1',cat:'vs',title:'Vorfahrt gewähren',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst geradeaus über die Kreuzung. Wer fährt zuerst?',
-  opts:[['A',1],['Du – A kommt doch von links',0],['Wer zuerst an der Kreuzung ist',0]],order:[['A'],['du']],
-  ex:'Vor dir steht „Vorfahrt gewähren“ (Zeichen 205), A fährt auf der Vorfahrtstraße (Zeichen 306). Also wartest du – egal, ob A von links oder rechts kommt. Rechts vor links spielt keine Rolle, sobald Schilder die Vorfahrt regeln.',
-  tip:'Erst das Schild suchen, dann die Autos anschauen.'},
+const fmt = n => n.toLocaleString("de-DE");
+const kw = d => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y) / 864e5 + 1) / 7); };
 
- {id:'vs2',cat:'vs',title:'Linksabbiegen auf der Vorfahrtstraße',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
-  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'N',move:'straight'},{id:'B',arm:'E',move:'straight'}],
-  q:'Du willst links abbiegen. In welcher Reihenfolge wird gefahren?',
-  opts:[['A → Du → B',1],['Du → A → B',0],['B → A → Du',0],['A → B → Du',0]],order:[['A'],['du'],['B']],
-  ex:'Du und A seid auf der Vorfahrtstraße, B hat Zeichen 205 und muss euch beide durchlassen. Zwischen euch beiden gilt die Abbiegeregel: Wer links abbiegt, lässt den Gegenverkehr durch (§ 9 StVO). Also erst A, dann du, zuletzt B.',
-  tip:'Vorfahrtstraße heißt nicht: Ich darf immer zuerst. Gegenverkehr geht beim Linksabbiegen vor.'},
+function auswahl(){
+  if (state.wahl === "frei") return { salat: byId[state.salat], abend: byId[state.abend], woche: null };
+  const w = REZ.rotation.find(x => x.woche === state.wahl);
+  return { salat: byId[w.salat], abend: byId[w.abend], woche: w };
+}
+const key = () => state.wahl === "frei" ? `frei:${state.salat}:${state.abend}` : `w${state.wahl}`;
 
- {id:'vs3',cat:'vs',title:'Rechts abbiegen mit 205',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst nur rechts abbiegen. Musst du A durchlassen?',
-  opts:[['Ja, A hat Vorfahrt',1],['Nein, beim Rechtsabbiegen nicht',0],['Nur wenn A blinkt',0]],order:[['A'],['du']],
-  ex:'Zeichen 205 gilt für jede Fahrtrichtung. Beim Rechtsabbiegen fährst du genau in die Spur, auf der A kommt – du würdest A also behindern. A fährt zuerst.',
-  tip:'205 gilt immer – geradeaus, links und rechts.'},
-
- {id:'vs4',cat:'vs',title:'Stoppschild',arms:'NESW',signs:{S:['206'],N:['206'],W:['306'],E:['306']},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight'}],
-  q:'',opts:[],order:[['A'],['du']],
-  ex:'Zeichen 206: Du hältst an der Haltlinie vollständig an – immer, auch wenn alles frei wirkt. Danach gewährst du Vorfahrt: A ist auf der Vorfahrtstraße und fährt zuerst. Durchrollen ist in der Prüfung ein klassischer Fehler.',
-  tip:'Stopp = Räder stehen. Jedes Mal.'},
-
- {id:'vs5',cat:'vs',title:'Stoppschild und Rechtsabbiegen',arms:'NESW',signs:{S:['206'],N:['206'],W:['306'],E:['306']},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst rechts abbiegen. Was ist richtig?',
-  opts:[['Anhalten, A durchlassen, dann abbiegen',1],['Ohne Anhalten zügig vor A abbiegen',0],['Kein Halt nötig, weil du nur rechts abbiegst',0]],order:[['A'],['du']],
-  ex:'Am Stoppschild hältst du immer an. Danach gilt dasselbe wie bei 205: A ist auf der Vorfahrtstraße und kommt in die Spur, in die du einbiegst. Also A abwarten.',
-  tip:'Erst stehen, dann schauen, dann fahren.'},
-
- {id:'vs6',cat:'vs',title:'Zwei Autos auf der Vorfahrtstraße',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'W',move:'straight'},{id:'B',arm:'E',move:'left'}],
-  q:'Du willst links abbiegen. A kommt von links, B von rechts. Reihenfolge?',
-  opts:[['A → B → Du',1],['B → A → Du',0],['A → Du → B',0],['Du → A → B',0]],order:[['A'],['B'],['du']],
-  ex:'A und B haben beide Vorrang vor dir (du hast 205). Untereinander gilt: B biegt links ab und lässt den Gegenverkehr A durch. Also A, dann B, zuletzt du.',
-  tip:'Erst klären, wer auf der Vorfahrtstraße ist. Dann die Abbiegeregeln unter denen anwenden.'},
-
- {id:'vs7',cat:'vs',title:'Vorfahrt an der nächsten Kreuzung',arms:'NESW',signs:{S:['301'],N:['301'],W:['205'],E:['205']},main:['S','N'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst geradeaus. Wer fährt zuerst?',
-  opts:[['Du',1],['A',0],['Wer zuerst da ist',0]],order:[['du'],['A']],
-  ex:'Zeichen 301 gibt dir Vorfahrt an genau dieser Kreuzung oder Einmündung. A hat „Vorfahrt gewähren“ und wartet. Achtung: 301 gilt nur einmal – an der Kreuzung danach musst du neu schauen.',
-  tip:'301 = Vorfahrt nur an der nächsten Kreuzung. 306 = Vorfahrt bis zum Ende-Schild (307).'},
-
- {id:'vs8',cat:'vs',title:'301 und Linksabbiegen',arms:'NESW',signs:{S:['301'],N:['301'],W:['205'],E:['205']},main:['S','N'],
-  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'E',move:'straight'},{id:'B',arm:'N',move:'straight'}],
-  q:'Du willst links abbiegen. Reihenfolge?',
-  opts:[['B → Du → A',1],['Du → B → A',0],['A → B → Du',0],['B → A → Du',0]],order:[['B'],['du'],['A']],
-  ex:'A hat 205 und muss warten. Gegenüber B hilft dir dein 301 aber nicht: B kommt dir entgegen und fährt geradeaus, du biegst links ab – also lässt du B durch. Danach du, zuletzt A.',
-  tip:'Linksabbieger lässt Gegenverkehr durch – auch wenn beide Vorfahrt haben.'},
-
- {id:'vs9',cat:'vs',title:'Verkehr von beiden Seiten',arms:'NESW',signs:{E:['205'],W:['205'],N:['306'],S:['306']},main:['N','S'],
-  cars:[{id:'du',arm:'E',move:'straight'},{id:'A',arm:'S',move:'straight'},{id:'B',arm:'N',move:'right'}],
-  q:'Du willst geradeaus. Wer fährt wann?',
-  opts:[['A und B gleichzeitig, dann du',1],['Du → A → B',0],['B → Du → A',0],['A → Du → B',0]],order:[['A','B'],['du']],
-  ex:'Du hast 205, A und B sind auf der Vorfahrtstraße – du wartest auf beide. A fährt geradeaus, B biegt rechts ab: Die beiden behindern sich nicht und können gleichzeitig fahren. Danach bist du dran.',
-  tip:'Bei 205 nach links UND rechts schauen – du kreuzt beide Fahrspuren.'},
-
- {id:'abk1',cat:'abk',title:'Abknickende Vorfahrt lesen',arms:'NESW',signs:{N:['306','z'],E:['306','z'],S:['205','z'],W:['205','z']},main:['N','E'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'N',move:'left'},{id:'B',arm:'W',move:'straight'}],
-  q:'Schau aufs Zusatzzeichen. Du willst geradeaus. Reihenfolge?',
-  opts:[['A → Du → B',1],['Du → B → A',0],['B → A → Du',0],['A → B → Du',0]],order:[['A'],['du'],['B']],
-  ex:'Das Zusatzzeichen zeigt die Vorfahrtstraße als dicke Linie: Sie kommt von gegenüber und knickt (aus deiner Sicht) nach rechts ab. A folgt ihr und hat Vorfahrt. Du und B seid beide auf untergeordneten Straßen – untereinander gilt rechts vor links. B kommt von links, also fährst du vor B.',
-  tip:'Nebenstraße gegen Nebenstraße = rechts vor links.'},
-
- {id:'abk2',cat:'abk',title:'Der Vorfahrt folgen',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
-  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'N',move:'straight'}],
-  q:'Du willst links abbiegen, A kommt dir entgegen und fährt geradeaus. Wer zuerst?',
-  opts:[['Du',1],['A – A kommt dir entgegen und du biegst links ab',0],['A – A fährt geradeaus',0]],order:[['du'],['A']],
-  ex:'Du bleibst auf der Vorfahrtstraße, A kommt aus einer untergeordneten Straße (205). Also fährst du zuerst – die Linksabbieger-Regel gilt hier nicht gegenüber A. Wichtig: Wer der abknickenden Vorfahrt folgt, muss blinken, hier also links.',
-  tip:'Der abknickenden Vorfahrt folgen = blinken!'},
-
- {id:'abk3',cat:'abk',title:'Zwei Nebenstraßen',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
-  cars:[{id:'du',arm:'N',move:'straight'},{id:'A',arm:'E',move:'straight'}],
-  q:'Du willst geradeaus, A kommt von links. Sonst ist niemand da. Wer zuerst?',
-  opts:[['Du',1],['A',0],['Beide warten, bis einer verzichtet',0]],order:[['du'],['A']],
-  ex:'Ihr beide habt 205 – aber das regelt nur euer Verhältnis zur Vorfahrtstraße. Untereinander gilt rechts vor links. Aus Sicht von A kommst du von rechts, also fährst du zuerst.',
-  tip:'205 heißt nicht automatisch warten – es heißt: Vorfahrtstraße zuerst.'},
-
- {id:'abk4',cat:'abk',title:'Abknickend mit drei Autos',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
-  cars:[{id:'du',arm:'E',move:'straight'},{id:'A',arm:'S',move:'left'},{id:'B',arm:'N',move:'straight'}],
-  q:'Du willst geradeaus. Reihenfolge?',
-  opts:[['A → B → Du',1],['A → Du → B',0],['B → Du → A',0],['Du → A → B',0]],order:[['A'],['B'],['du']],
-  ex:'A ist auf der Vorfahrtstraße und fährt zuerst. Du und B seid in Nebenstraßen: rechts vor links. B kommt für dich von rechts, also fährt B vor dir.',
-  tip:'Reihenfolge: Vorfahrtstraße → dann rechts vor links bei den Nebenstraßen.'},
-
- {id:'abk5',cat:'abk',title:'Beide auf der Vorfahrtstraße',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
-  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst links abbiegen. A kommt von links und fährt geradeaus. Wer zuerst?',
-  opts:[['Du',1],['A – du biegst links ab',0],['A – A kommt von links',0]],order:[['du'],['A']],
-  ex:'Ihr seid beide auf der Vorfahrtstraße. Du folgst ihrem Verlauf, A verlässt sie, indem er geradeaus fährt, und kreuzt dabei deinen Weg. Damit gilt A als Abbieger und muss dich durchlassen. Wer dem Knick folgt, hat Vorrang.',
-  tip:'Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt und kreuzt, wartet.'},
-
- {id:'abk6',cat:'abk',title:'Du verlässt die Vorfahrtstraße',arms:'NESW',signs:{S:['306','z'],W:['306','z'],N:['205','z'],E:['205','z']},main:['S','W'],
-  cars:[{id:'du',arm:'W',move:'straight'},{id:'A',arm:'S',move:'left'}],
-  q:'Du willst geradeaus. A kommt von rechts und biegt links ab. Wer zuerst?',
-  opts:[['A',1],['Du – du fährst geradeaus',0],['Du – A kommt von links',0]],order:[['A'],['du']],
-  ex:'Die Vorfahrtstraße knickt aus deiner Sicht nach rechts ab. Fährst du geradeaus, verlässt du sie und kreuzt dabei den Weg von A, der ihr folgt. Dann giltst du als Abbieger und lässt A durch. Geradeaus fahren heißt hier nicht automatisch Vorrang.',
-  tip:'Geradeaus kann „abbiegen“ sein – entscheidend ist der Verlauf der Vorfahrtstraße.'},
-
- {id:'abk7',cat:'abk',title:'Abknickend an der Einmündung',arms:'NSW',signs:{S:['306','z'],W:['306','z'],N:['205','z']},main:['S','W'],
-  cars:[{id:'du',arm:'N',move:'straight'},{id:'A',arm:'W',move:'right'}],
-  q:'Einmündung. Du willst geradeaus, A kommt von rechts. Wer zuerst?',
-  opts:[['A',1],['Du – du fährst geradeaus',0],['Gleichzeitig, ihr kreuzt euch nicht',0]],order:[['A'],['du']],
-  ex:'Das Zusatzzeichen zeigt: Die Vorfahrtstraße kommt von rechts und knickt nach vorne ab – genau in die Richtung, in die du willst. A folgt ihr und hat Vorfahrt, du hast 205. Dass du „geradeaus“ fährst, spielt keine Rolle.',
-  tip:'Zusatzzeichen auch an Einmündungen lesen – nicht nur an Kreuzungen.'},
-
- {id:'abk8',cat:'abk',title:'Knick nach rechts',arms:'NESW',signs:{S:['306','z'],E:['306','z'],N:['205','z'],W:['205','z']},main:['S','E'],
-  cars:[{id:'du',arm:'W',move:'straight'},{id:'A',arm:'S',move:'right'},{id:'B',arm:'N',move:'straight'}],
-  q:'Du willst geradeaus. Reihenfolge?',
-  opts:[['A → Du → B',1],['A → B → Du',0],['Du → A → B',0],['B → Du → A',0]],order:[['A'],['du'],['B']],
-  ex:'Die Vorfahrtstraße kommt von rechts und knickt in deine Fahrtrichtung ab. A folgt ihr und fährt in dieselbe Richtung wie du – A zuerst. Du und B seid in Nebenstraßen: rechts vor links. Für B kommst du von rechts, also fährst du vor B.',
-  tip:'Erst die Vorfahrtstraße, dann rechts vor links unter den Nebenstraßen.'},
-
- {id:'rvl1',cat:'rvl',title:'Ungeregelte Kreuzung',arms:'NESW',signs:{},
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight'}],
-  q:'Du willst geradeaus. Wer fährt zuerst?',
-  opts:[['A',1],['Du',0],['Wer schneller ist',0]],order:[['A'],['du']],
-  ex:'Nichts geregelt → rechts vor links (§ 8 StVO). A kommt von rechts und fährt zuerst. Typisch in Wohngebieten und 30-Zonen.',
-  tip:'In der 30-Zone fast immer rechts vor links – langsam ranfahren.'},
-
- {id:'rvl2',cat:'rvl',title:'Rechts vor links, von links',arms:'NESW',signs:{},
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst geradeaus, A kommt von links. Wer fährt zuerst?',
-  opts:[['Du',1],['A',0],['Beide gleichzeitig',0]],order:[['du'],['A']],
-  ex:'Du kommst für A von rechts – also hast du Vorfahrt. Fahr trotzdem aufmerksam: Wenn A dich nicht sieht, wartest du lieber (§ 1 StVO, ständige Vorsicht).',
-  tip:'Vorfahrt haben heißt nicht: Vorfahrt erzwingen.'},
-
- {id:'rvl3',cat:'rvl',title:'Linksabbiegen ohne Schilder',arms:'NESW',signs:{},
-  cars:[{id:'du',arm:'S',move:'left'},{id:'A',arm:'N',move:'straight'}],
-  q:'Du willst links, A kommt dir entgegen. Wer zuerst?',
-  opts:[['A',1],['Du – A kommt ja nicht von rechts',0],['Wer zuerst da ist',0]],order:[['A'],['du']],
-  ex:'Rechts vor links hilft hier nicht, A kommt dir entgegen. Es gilt die Abbiegeregel: Linksabbieger lässt den Gegenverkehr durch.',
-  tip:'Gegenverkehr + Linksabbiegen = warten.'},
-
- {id:'amp1',cat:'ampel',title:'Ampel ausgefallen',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},lights:{S:'off',N:'off',E:'off',W:'off'},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
-  q:'Die Ampel ist aus. Wer fährt zuerst?',
-  opts:[['A',1],['Du – du bist rechts von A',0],['Ohne Ampel gilt rechts vor links',0]],order:[['A'],['du']],
-  ex:'Ist die Ampel aus (oder blinkt gelb), gelten die Verkehrszeichen. Du hast 205, A ist auf der Vorfahrtstraße. Rechts vor links gilt nur, wenn gar nichts geregelt ist.',
-  tip:'Ampel aus → Schilder an der Ampel suchen.'},
-
- {id:'amp2',cat:'ampel',title:'Grün, aber 205',arms:'NESW',signs:{S:['205'],N:['205'],W:['306'],E:['306']},lights:{S:'green',N:'green',E:'red',W:'red'},main:['W','E'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
-  q:'Schau auf deinen Mast. Wer fährt zuerst?',
-  opts:[['Du – die Ampel geht vor',1],['A – A ist auf der Vorfahrtstraße',0],['Wer zuerst da war',0]],order:[['du'],['A']],
-  ex:'Ampeln gehen Verkehrszeichen vor. Bei Grün fährst du, A hat Rot. Das 205 zählt erst, wenn die Ampel aus ist oder gelb blinkt.',
-  tip:'Rangfolge: Polizei → Ampel → Schilder → rechts vor links.'},
-
- {id:'amp3',cat:'ampel',title:'Linksabbiegen bei Grün',arms:'NESW',signs:{},lights:{S:'green',N:'green',E:'red',W:'red'},
-  cars:[{id:'du',arm:'S',move:'left'},{id:'B',arm:'N',move:'straight'}],
-  q:'Grün für dich und den Gegenverkehr. Du willst links. Wer zuerst?',
-  opts:[['B',1],['Du – du hast ja Grün',0],['Gleichzeitig',0]],order:[['B'],['du']],
-  ex:'Grün heißt nur „Kreuzung frei“, nicht „Vorrang vor dem Gegenverkehr“. Als Linksabbieger lässt du B durch. Fahr dafür schon in die Kreuzung ein und warte dort, ohne den Gegenverkehr zu behindern.',
-  tip:'Bei Grün links: einfahren, warten, Gegenverkehr durchlassen.'},
-
- {id:'amp4',cat:'ampel',title:'Grünpfeil-Schild',arms:'NESW',signs:{},lights:{S:'red',N:'red',E:'green',W:'green'},gp:'S',
-  cars:[{id:'du',arm:'S',move:'right'},{id:'A',arm:'W',move:'straight'}],
-  q:'Du willst rechts abbiegen. Was machst du?',
-  opts:[['Anhalten, A durchlassen, dann vorsichtig abbiegen',1],['Ohne Halten abbiegen – ist ja erlaubt',0],['Bis Grün warten',0]],order:[['A'],['du']],
-  ex:'Beim Grünpfeil-Schild (Zeichen 720) musst du zuerst an der Haltlinie anhalten. Abbiegen darfst du nur, wenn du niemanden behinderst oder gefährdest – vor allem den Querverkehr mit Grün (A) sowie Fußgänger und Radfahrer. Ein leuchtender grüner Pfeil in der Ampel ist etwas anderes: Dann darfst du ohne Halt fahren.',
-  tip:'Blechpfeil = Stopp + Vorsicht. Leuchtpfeil = freie Fahrt.'},
-
- {id:'amp5',cat:'ampel',title:'Polizei an der Kreuzung',arms:'NESW',signs:{},lights:{S:'green',N:'green',E:'red',W:'red'},police:true,hint:'Der Polizist steht mit der Brust zu dir.',
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'W',move:'straight'}],
-  q:'Deine Ampel ist grün. Der Polizist in der Mitte steht frontal zu dir. Was tust du?',
-  opts:[],order:[['A'],['du']],
-  ex:'Zeichen der Polizei gehen allem vor, auch der Ampel. Brust oder Rücken zu dir heißt Halt – trotz Grün. A sieht den Polizisten von der Seite, das heißt für A: Fahrt frei, obwohl seine Ampel Rot zeigt.',
-  tip:'Brust oder Rücken = Halt. Seite = Fahrt.'},
-
- {id:'fus1',cat:'fuss',title:'Fußgänger quert beim Rechtsabbiegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
-  peds:[{from:[4.6,6.6],pos:[4.6,9.6],to:[4.6,16.3]}],
-  cars:[{id:'du',arm:'S',move:'right'}],order:[['ped'],['du']],
-  ex:'Du bist auf der Vorfahrtstraße – gegenüber Autos hättest du Vorfahrt. Aber der Fußgänger läuft quer über die Straße, in die du einbiegst. Beim Abbiegen musst du ihn durchlassen (§ 9 StVO). Die Vorfahrtstraße ändert daran nichts.',
-  tip:'Beim Abbiegen: Wer die Zielstraße quert, geht vor.'},
-
- {id:'fus2',cat:'fuss',title:'Fußgänger kommt dir entgegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
-  peds:[{from:[4.6,16.3],pos:[4.6,13.4],to:[4.6,6.6]}],
-  cars:[{id:'du',arm:'S',move:'right'}],order:[['ped'],['du']],
-  ex:'Der Fußgänger quert die Straße, in die du einbiegst – diesmal von der gegenüberliegenden Seite auf dich zu. Die Richtung ist egal: Wer die Zielstraße quert, hat beim Abbiegen Vorrang. Du wartest, bis er auf dem Gehweg ist.',
-  tip:'Egal von welcher Seite: quert er deine Zielstraße, wartest du.'},
-
- {id:'fus3',cat:'fuss',title:'Fußgänger auf dem Gehweg',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
-  peds:[{from:[4.6,16.1],pos:[6.6,16.1],to:[12,16.1]}],
-  cars:[{id:'du',arm:'S',move:'right'}],order:[['du']],
-  ex:'Der Fußgänger läuft auf dem Gehweg von der Kreuzung weg – er quert die Straße nicht. Damit gibt es keinen Konflikt: Du bist auf der Vorfahrtstraße und darfst abbiegen. Behalte ihn trotzdem im Blick.',
-  tip:'Laufrichtung lesen: längs auf dem Gehweg = kein Konflikt.'},
-
- {id:'fus4',cat:'fuss',title:'Fußgänger beim Linksabbiegen',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
-  peds:[{from:[-4.6,16.3],pos:[-4.6,13.2],to:[-4.6,6.6]}],
-  cars:[{id:'du',arm:'S',move:'left'}],order:[['ped'],['du']],
-  ex:'Du biegst links ab, der Fußgänger quert genau die Straße, in die du fährst. Auch beim Linksabbiegen gilt: Er geht vor (§ 9 StVO). Kein Gegenverkehr heißt nicht freie Fahrt.',
-  tip:'Links abbiegen: erst Gegenverkehr, dann Fußgänger in der Zielstraße.'},
-
- {id:'fus5',cat:'fuss',title:'Zebrastreifen hinter der Kreuzung',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],zebra:'N',
-  peds:[{from:[-5.4,18.6],pos:[-2.2,18.6],to:[5.4,18.6]}],
-  cars:[{id:'du',arm:'S',move:'straight'}],order:[['ped'],['du']],
-  ex:'Hinter der Kreuzung liegt ein Zebrastreifen, und der Fußgänger ist gerade darauf unterwegs. Am Fußgängerüberweg musst du ihn queren lassen (§ 26 StVO). Fahr deshalb gar nicht erst in die Kreuzung ein – sonst stehst du darin und blockierst den Querverkehr.',
-  tip:'Zebrastreifen hinter der Kreuzung: vor der Kreuzung warten.'},
-
- {id:'fus6',cat:'fuss',title:'Zebrastreifen, Fußgänger ist drüben',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],zebra:'N',
-  peds:[{from:[4.6,18.6],pos:[4.6,21.5],to:[4.6,30]}],
-  cars:[{id:'du',arm:'S',move:'straight'}],order:[['du']],
-  ex:'Der Fußgänger hat den Zebrastreifen schon verlassen und läuft auf dem Gehweg davon. Niemand quert, du bist auf der Vorfahrtstraße – du darfst fahren.',
-  tip:'Am Zebrastreifen zählt: Will jemand queren oder quert er gerade?'},
-
- {id:'son1',cat:'sonder',title:'Ausfahrt vom Parkplatz',arms:'NSE',drive:'E',signs:{},
-  cars:[{id:'du',arm:'E',move:'left'},{id:'A',arm:'S',move:'straight'}],
-  q:'Du fährst vom Parkplatz und willst links abbiegen. A kommt von links. Wer zuerst?',
-  opts:[['A',1],['Du – du bist für A rechts',0],['Wer zuerst da ist',0]],order:[['A'],['du']],
-  ex:'Wer aus einem Grundstück, Parkplatz, verkehrsberuhigten Bereich oder über einen abgesenkten Bordstein auf die Straße fährt, muss alle durchlassen (§ 10 StVO). Rechts vor links gilt hier nicht.',
-  tip:'Abgesenkter Bordstein = du bist der Letzte.'},
-
- {id:'son3',cat:'sonder',title:'Rettungswagen',hint:'Blaulicht und Martinshorn sind an.',arms:'NESW',signs:{S:['306'],N:['306'],E:['205'],W:['205']},main:['S','N'],
-  cars:[{id:'du',arm:'S',move:'straight'},{id:'A',arm:'E',move:'straight',kind:'rtw'}],
-  q:'Von rechts kommt ein Rettungswagen mit Blaulicht und Martinshorn. Was tust du?',
-  opts:[['Anhalten und ihn fahren lassen',1],['Weiterfahren – du hast Vorfahrt',0],['Nur ausweichen, wenn er hupt',0]],order:[['A'],['du']],
-  ex:'Blaulicht und Martinshorn zusammen bedeuten: sofort freie Bahn schaffen (§ 38 StVO). Das geht über Schilder und Ampeln. Nur Blaulicht ohne Horn ist eine Warnung, aber keine Pflicht zum Platzmachen.',
-  tip:'Blau + Horn = sofort Platz machen.'}
-];
-
-/* ---------- Geometrie ---------- */
-const ARM = {
-  S:{entry:[165,182],exitIn:[135,182],exitOut:[135,226],car:[165,210],rot:0,  fwd:[0,-1],sign:[198,200],light:[222,204]},
-  N:{entry:[135,118],exitIn:[165,118],exitOut:[165,74], car:[135,90], rot:180,fwd:[0,1], sign:[102,80], light:[78,84]},
-  E:{entry:[182,135],exitIn:[182,165],exitOut:[226,165],car:[210,135],rot:-90,fwd:[-1,0],sign:[204,80], light:[228,84]},
-  W:{entry:[118,165],exitIn:[118,135],exitOut:[74,135], car:[90,165], rot:90, fwd:[1,0], sign:[96,200], light:[72,204]}
-};
-const EXIT = {S:{straight:'N',right:'E',left:'W'},N:{straight:'S',right:'W',left:'E'},E:{straight:'W',right:'N',left:'S'},W:{straight:'E',right:'S',left:'N'}};
-const DIR = {N:[0,-1],S:[0,1],E:[1,0],W:[-1,0]};
-const VIEWROT = {S:0,W:-90,N:180,E:90};
-const COLORS = {du:'#D97757',A:'#4A7FD1',B:'#3E9E6E',C:'#8E6BC9',ped:'#9B59D0'};
-
-function signSVG(t){
-  switch(t){
-    case '205': return `<polygon points="-11,-9 11,-9 0,10" fill="#fff" stroke="#C8102E" stroke-width="3" stroke-linejoin="round"/>`;
-    case '206': return `<polygon points="10.16,4.21 4.21,10.16 -4.21,10.16 -10.16,4.21 -10.16,-4.21 -4.21,-10.16 4.21,-10.16 10.16,-4.21" fill="#C8102E" stroke="#fff" stroke-width="1.4"/><text y="2.2" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" font-weight="700" fill="#fff">STOP</text>`;
-    case '306': return `<rect x="-8" y="-8" width="16" height="16" transform="rotate(45)" fill="#fff" stroke="#222" stroke-width=".7"/><rect x="-5.3" y="-5.3" width="10.6" height="10.6" transform="rotate(45)" fill="#F4C20D"/>`;
-    case '301': return `<polygon points="-11,9 11,9 0,-10" fill="#fff" stroke="#C8102E" stroke-width="3" stroke-linejoin="round"/><polygon points="0,-2.8 -1.9,-.96 -1.9,1.22 -3.84,1.22 -3.84,2.35 -1.9,2.35 -1.9,6.07 0,4.22 1.88,6.07 1.88,2.35 3.82,2.35 3.82,1.22 1.88,1.22 1.88,-.96" fill="#111"/>`;
-    case '720': return `<rect x="-9" y="-6" width="18" height="12" rx="1.5" fill="#111"/><path d="M-5,0H3M0,-3.2 3.6,0 0,3.2" stroke="#3BD16F" stroke-width="2" fill="none"/>`;
+function einkauf(){
+  const { salat, abend } = auswahl();
+  const tot = {};
+  for (const r of [salat, abend])
+    for (const [k, m, n] of r.zutaten) tot[k] = (tot[k] || 0) + m * (n ?? r.portionen);
+  const out = {}, vorrat = [];
+  for (const [k, m] of Object.entries(tot)){
+    const z = ZUT[k];
+    if (z.vorrat){ vorrat.push(z.name); continue; }
+    const p = z.packung;
+    let qty, need = "";
+    if (p.einheit === "g" && p.menge === 1) qty = `${fmt(Math.round(m / 10) * 10)} g`;
+    else {
+      const n = Math.max(1, Math.ceil(m / p.menge - 0.08));
+      const PL = { "Dose": "Dosen", "Glas": "Gläser", "Knolle": "Knollen", "Schale 500 g": "Schalen à 500 g", "Schale 250 g": "Schalen à 250 g", "Netz 2 kg": "Netze à 2 kg", "Beutel 1 kg": "Beutel à 1 kg" };
+      qty = `${n} ${n > 1 && PL[p.einheit] ? PL[p.einheit] : p.einheit}`;
+      if (p.menge >= 50) need = `${fmt(Math.round(m))} g gebraucht`;
+    }
+    (out[z.abteilung] ||= []).push({ k, name: z.name, qty, need, tausch: z.tauschbar });
   }
-  return '';
-}
-function zusatzSVG(signArm, arms, main){
-  /* Nach Zusatzzeichen 1002-10…24: quadratisch, Vorfahrtstraße als breites Band mit runder Kurve,
-     untergeordnete Straßen halb so breit und mit Abstand zur Mitte. Sicht aus der Zufahrt signArm (unten). */
-  let g = `<rect x="-12" y="-12" width="24" height="24" rx="1.6" fill="#fff" stroke="#222" stroke-width="1.3"/><g transform="rotate(${VIEWROT[signArm]})">`;
-  arms.filter(x=>!main.includes(x)).forEach(x=>{ const d=DIR[x]; g+=`<line x1="${d[0]*3}" y1="${d[1]*3}" x2="${d[0]*9}" y2="${d[1]*9}" stroke="#231F20" stroke-width="2"/>`; });
-  const A=DIR[main[0]], B=DIR[main[1]];
-  g += `<path d="M${A[0]*9},${A[1]*9} L${A[0]*4},${A[1]*4} Q0,0 ${B[0]*4},${B[1]*4} L${B[0]*9},${B[1]*9}" stroke="#231F20" stroke-width="4" fill="none"/>`;
-  return g + `</g>`;
-}
-function lightSVG(state){
-  const on = {red:'#E53935',yellow:'#FFB300',green:'#2ECC71'}, off='#4a4a4a';
-  const c = k => state===k ? on[k] : off;
-  return `<rect x="-6" y="-15" width="12" height="30" rx="3" fill="#1d1d1d"/>`+
-    `<circle cy="-8.5" r="3.6" fill="${c('red')}"/><circle cy="0" r="3.6" fill="${c('yellow')}"/><circle cy="8.5" r="3.6" fill="${c('green')}"/>`;
-}
-function carSVG(c){
-  const a = ARM[c.arm], [x,y] = a.car;
-  const rtw = c.kind==='rtw', col = rtw ? '#F5F5F2' : (COLORS[c.id]||'#888');
-  let g = `<g transform="translate(${x},${y}) rotate(${a.rot})">`;
-  g += `<rect x="-11" y="-18" width="22" height="36" rx="6" fill="${col}" stroke="rgba(0,0,0,.28)" stroke-width="1"/>`;
-  g += `<rect x="-8" y="-12" width="16" height="7" rx="2" fill="rgba(0,0,0,.38)"/><rect x="-8" y="10" width="16" height="4" rx="1.5" fill="rgba(0,0,0,.28)"/>`;
-  if(rtw) g += `<rect x="-11" y="2" width="22" height="3" fill="#D32F2F"/><circle class="blue" cx="-5" cy="-2" r="2.6"/><circle class="blue b2" cx="5" cy="-2" r="2.6"/>`;
-  if(c.move==='left')  g += `<circle class="blink" cx="-9" cy="-16.5" r="2.6"/><circle class="blink" cx="-9" cy="16.5" r="2.2"/>`;
-  if(c.move==='right') g += `<circle class="blink" cx="9" cy="-16.5" r="2.6"/><circle class="blink" cx="9" cy="16.5" r="2.2"/>`;
-  g += `</g>`;
-  const lbl = c.id==='du' ? 'Du' : (rtw ? 'RTW' : c.id);
-  g += `<text class="clabel" x="${x}" y="${y+ (rtw?10:4)}" style="${rtw?'fill:#C62828;font-size:7.5px':''}">${lbl}</text>`;
-  return g;
-}
-function arrowSVG(c){
-  const a = ARM[c.arm], ex = ARM[EXIT[c.arm][c.move]];
-  const col = c.kind==='rtw' ? '#D32F2F' : (COLORS[c.id]||'#888');
-  const front = [a.car[0]+a.fwd[0]*19, a.car[1]+a.fwd[1]*19];
-  const e = a.entry, xi = ex.exitIn, xo = ex.exitOut;
-  let ctrl;
-  if(c.move==='straight') ctrl = [(e[0]+xi[0])/2,(e[1]+xi[1])/2];
-  else if(c.arm==='S'||c.arm==='N') ctrl = [e[0], xi[1]];
-  else ctrl = [xi[0], e[1]];
-  const d = [xo[0]-xi[0], xo[1]-xi[1]], len = Math.hypot(d[0],d[1]), u=[d[0]/len,d[1]/len];
-  const tip = xo, base=[tip[0]-u[0]*9, tip[1]-u[1]*9], p=[-u[1],u[0]];
-  return `<path d="M${front}L${e}Q${ctrl} ${xi}L${base}" fill="none" stroke="${col}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>`+
-    `<polygon points="${tip} ${base[0]+p[0]*6},${base[1]+p[1]*6} ${base[0]-p[0]*6},${base[1]-p[1]*6}" fill="${col}" opacity=".9"/>`;
+  return { out, vorrat: [...new Set(vorrat)] };
 }
 
-function scene(s, solved){
-  const arms = s.arms.split('');
-  const signs = s.signs||{}, lights = s.lights||{};
-  let o = `<svg class="scene" viewBox="0 0 300 300" role="img" aria-label="${s.title}">`;
-  o += `<rect width="300" height="300" class="grass"/>`;
-  const R={N:[120,0,60,120],S:[120,180,60,120],E:[180,120,120,60],W:[0,120,120,60]};
-  const RW={N:[103,0,94,120],S:[103,180,94,120],E:[180,103,120,94],W:[0,103,120,94]};
-  o += `<rect x="103" y="103" width="94" height="94" class="walk"/>`;
-  arms.forEach(a=>{ if(s.drive===a) return; const r=RW[a]; o+=`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" class="walk"/>`; });
-  o += `<rect x="120" y="120" width="60" height="60" class="road"/>`;
-  arms.forEach(a=>{const r=R[a]; o+=`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" class="${s.drive===a?'drive':'road'}"/>`;});
-  if(s.drive){
-    const cb={E:'M181,122V178',W:'M119,122V178',N:'M122,119H178',S:'M122,181H178'}[s.drive];
-    o += `<path d="${cb}" class="curb"/>`;
-    const lp={E:[240,112],W:[60,112],N:[210,40],S:[210,262]}[s.drive];
-    o += `<text class="tlabel" x="${lp[0]}" y="${lp[1]}">Parkplatz</text>`;
+
+function chips(m){
+  return `<div class="macros"><span class="chip">${fmt(m.kcal)} kcal</span><span class="chip p">${m.protein} g Protein</span>${m.fett != null ? `<span class="chip">${m.fett} g Fett</span>` : ""}</div>`;
+}
+
+function mealRow(label, r, when){
+  const m = r.makros;
+  const txt = `${r.name}: ${m.kcal} kcal, ${m.protein} g Protein${m.fett != null ? ", " + m.fett + " g Fett" : ""}`;
+  return `<div class="meal">
+    <div><div class="meal-label">${label} · ${when}</div><h2>${r.name}</h2></div>
+    <div class="count">× ${r.portionen}<small>${r.portionen === 1 ? "Portion" : "Portionen"}</small></div>
+    <div class="macro"><span>${fmt(m.kcal)} kcal</span><span class="p">${m.protein} g Protein</span>${m.fett != null ? `<span>${m.fett} g Fett</span>` : ""}<button class="copy" data-copy="${txt}">Kopieren</button></div>
+  </div>`;
+}
+
+function viewWoche(){
+  const { salat, abend } = auswahl(), z = REZ.ziele;
+  const di = { kcal: salat.makros.kcal + abend.makros.kcal, protein: salat.makros.protein + abend.makros.protein };
+  const st = (v, goal, isP) => isP
+    ? (v >= goal ? `<span class="st">Ziel erreicht</span>` : `<span class="st warn">${goal - v} g fehlen</span>`)
+    : z.kcal_min != null
+      ? (v < z.kcal_min ? `<span class="st warn">${fmt(z.kcal_min - v)} fehlen</span>` : v > z.kcal_max ? `<span class="st warn">${fmt(v - z.kcal_max)} drüber</span>` : `<span class="st">im Zielbereich</span>`)
+      : (v <= goal ? `<span class="st">${fmt(goal - v)} übrig</span>` : `<span class="st warn">${fmt(v - goal)} drüber</span>`);
+  const note = z.kcal_min != null
+    ? `Ziel: ${fmt(z.kcal_min)}–${fmt(z.kcal_max)} kcal und mindestens ${z.protein_tag} g Protein pro Tag, komplett aus Mittag und Abendessen.`
+    : `Ziel: ${fmt(z.kcal_tag)} kcal und ${z.protein_tag} g Protein pro Tag. Fürs Wochenende, an dem du frisch kochst, bleiben vom Wochenbudget (${fmt(z.kcal_woche)} kcal) noch ${fmt(z.kcal_woche - 5 * di.kcal)} kcal.`;
+  return `
+    <div><h1 class="hello">Diese Woche: <em>${salat.kurz}</em> und <em>${abend.kurz}</em>.</h1>
+    <p class="lead">${UI.lead}</p></div>
+    <section class="panel">
+      ${mealRow(UI.label_salat, salat, UI.when_salat)}
+      ${mealRow(UI.label_abend, abend, UI.when_abend)}
+    </section>
+    <section>
+      <h3 class="h-sec">Tagessumme gegen dein Ziel</h3>
+      <div class="panel" style="overflow-x:auto"><table>
+        <thead><tr><th>Tag</th><th>kcal</th><th>Protein</th></tr></thead>
+        <tbody>
+          <tr><td>Mo–Fr</td><td>${fmt(di.kcal)}<br>${st(di.kcal, z.kcal_tag)}</td><td>${di.protein} g<br>${st(di.protein, z.protein_tag, true)}</td></tr>
+        </tbody></table></div>
+    </section>
+    <p class="note">${note}</p>`;
+}
+
+function viewEinkauf(){
+  const { out, vorrat } = einkauf();
+  const checks = store.get("checks:" + key(), {});
+  const total = Object.values(out).flat().length, done = Object.values(out).flat().filter(i => checks[i.k]).length;
+  let h = `<div class="section"><div class="bar"><h3>${done} von ${total} im Wagen</h3><button class="reset" id="reset">Zurücksetzen</button></div><div class="progress"><span style="width:${total ? done / total * 100 : 0}%"></span></div>`;
+  for (const a of ABT){
+    if (!out[a]) continue;
+    h += `<div class="group"><span class="eyebrow">${a}</span>`;
+    for (const i of out[a]) h += `<label class="item ${checks[i.k] ? "done" : ""}"><input type="checkbox" id="c-${i.k}" data-k="${i.k}" ${checks[i.k] ? "checked" : ""}><span class="what">${i.name}${i.need ? `<span class="need">${i.need}</span>` : ""}${i.tausch ? `<span class="need">${i.tausch}</span>` : ""}</span><span class="qty">${i.qty}</span></label>`;
+    h += `</div>`;
   }
-  if(solved && s.main){
-    const OUT={N:[150,0],S:[150,300],E:[300,150],W:[0,150]};
-    o += `<path class="mainhl" d="M${OUT[s.main[0]]}L150,150L${OUT[s.main[1]]}"/>`;
-  }
-  const CL={N:[150,0,150,116],S:[150,184,150,300],E:[184,150,300,150],W:[0,150,116,150]};
-  arms.forEach(a=>{ if(s.drive===a) return; const l=CL[a]; o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="cl"/>`;});
-  const SL={S:[150,185,180,185],N:[120,115,150,115],E:[185,120,185,150],W:[115,150,115,180]};
-  arms.forEach(a=>{
-    const sg=signs[a]||[], l=SL[a];
-    if(sg.includes('206')||lights[a]) o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="sl"/>`;
-    else if(sg.includes('205')) o+=`<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" class="sl dash"/>`;
-  });
-  if(s.zebra==='N') for(let x=122;x<178;x+=8.1) o+=`<rect class="zebra" x="${x}" y="79" width="4.3" height="22"/>`;
-  s.cars.forEach(c=>{ o+=arrowSVG(c); });
-  s.cars.forEach(c=>{ o+=carSVG(c); });
-  (s.peds||[]).forEach(pd=>{ o+=topPed(pd); });
-  Object.keys(signs).forEach(a=>{
-    const sg=signs[a]; if(!sg.length) return;
-    const [x,y]=ARM[a].sign, main=sg.filter(t=>t!=='z')[0];
-    o += `<g transform="translate(${x},${y})">${signSVG(main)}</g>`;
-    if(sg.includes('z')) o += `<g transform="translate(${x},${y+27}) scale(.95)">${zusatzSVG(a,arms,s.main)}</g>`;
-  });
-  Object.keys(lights).forEach(a=>{
-    const [x,y]=ARM[a].light;
-    o += `<g transform="translate(${x},${y})">${lightSVG(lights[a])}</g>`;
-    if(s.gp===a) o += `<g transform="translate(${x},${y+24})">${signSVG('720')}</g>`;
-  });
-  if(s.police) o += `<circle cx="150" cy="150" r="13" fill="var(--surface)" opacity=".85"/><text x="150" y="157" font-size="19" text-anchor="middle">👮</text>`;
-  if(solved && s.order){
-    s.order.forEach((grp,i)=>grp.forEach(id=>{
-      let bx,by; const c=s.cars.find(k=>k.id===id);
-      if(id==='ped'&&(s.peds||[]).length){ const p=mapXY(...s.peds[0].pos); bx=p[0]+13; by=p[1]-13; }
-      else if(c){ const a=ARM[c.arm]; bx=a.car[0]-a.fwd[0]*30; by=a.car[1]-a.fwd[1]*30; }
-      else return;
-      o+=`<g class="badge"><circle cx="${bx}" cy="${by}" r="9"/><text x="${bx}" y="${by+4}">${i+1}</text></g>`;
-    }));
-  }
-  return o + `</svg>`;
+  h += `<details><summary>Vorrat prüfen (${vorrat.length})</summary><ul class="plain">${vorrat.map(v => `<li>${v}</li>`).join("")}</ul></details>
+  <p class="note">${UI.einkauf_note}</p></div>`;
+  return h;
 }
 
-/* ---------- Auf Fahrersicht drehen: „Du“ kommt immer von unten (S) ---------- */
-const ORDER=['N','E','S','W'];
-function rel(s){
-  const du=s.cars.find(c=>c.id==='du').arm, r=ORDER.indexOf(du)-2;
-  const m=a=>ORDER[(ORDER.indexOf(a)-r+8)%4];
-  const mo=o=>{const n={};Object.keys(o||{}).forEach(k=>n[m(k)]=o[k]);return n;};
-  return {...s, arms:s.arms.split('').map(m).join(''), signs:mo(s.signs), lights:mo(s.lights),
-    main:s.main&&s.main.map(m), drive:s.drive&&m(s.drive), gp:s.gp&&m(s.gp),
-    zebra:s.zebra&&m(s.zebra), peds:s.peds||[], cars:s.cars.map(c=>({...c,arm:m(c.arm)}))};
+function viewPrep(){
+  const { salat, abend, woche } = auswahl();
+  const steps = woche ? woche.prep : UI.frei_prep ? [UI.frei_prep, salat.hinweis] : [`${salat.name}: Protein und haltbare Teile für 5 Portionen vorbereiten. ${salat.hinweis}`, "Fleisch fürs Abendessen in 5 Tagesportionen teilen, Mi–Fr einfrieren."];
+  const checks = store.get("prep:" + key(), {});
+  return `<div class="section">
+    <div class="bar"><h3>${REZ.rhythmus.prep}${woche ? ` · ca. ${woche.prep_minuten} min` : ""}</h3><button class="reset" id="resetPrep">Zurücksetzen</button></div>
+    <div class="group">${steps.map((s, i) => `<label class="item ${checks[i] ? "done" : ""}"><input type="checkbox" id="p-${i}" data-p="${i}" ${checks[i] ? "checked" : ""}><span class="stepno">${i + 1}</span><span class="what">${s}</span></label>`).join("")}</div>
+    ${woche ? "" : `<p class="note">Für freie Kombinationen gibt es noch keinen fertigen Ablauf, nur die Hinweise aus den Rezepten.</p>`}
+    <details open><summary>${UI.frisch_titel}</summary><ul class="plain">${REZ.salat_regeln.map(s => `<li>${s}</li>`).join("")}</ul></details>
+    ${UI.tiefkuehl ? `<details><summary>Was wann aus dem Gefrierfach</summary><ul class="plain">
+      <li>Salat-Protein: Do und Fr eingefroren.</li>
+      <li>Rohes Fleisch fürs Abendessen: Mi, Do und Fr eingefroren.</li>
+      <li>Immer am Vorabend in den Kühlschrank legen.</li></ul></details>` : ""}
+    <details><summary>Abendessen: ${abend.name}</summary><div class="section"><p class="note">${abend.hinweis}</p>${ingList(abend)}</div></details>
+  </div>`;
+}
+
+function ingList(r){
+  const rows = r.zutaten.filter(([k, m]) => m > 0).map(([k, m, n]) => {
+    const z = ZUT[k], unit = z.stueck ? " Stk." : (z.packung && z.packung.menge === 1 && z.packung.einheit !== "g") || k === "eier" || k === "knoblauch" || k === "gewuerzgurken" ? (k === "knoblauch" ? " Zehe" : " Stk.") : " g";
+    return `<span>${z.name}${n != null ? ` <small>(${n} von ${r.portionen})</small>` : ""}</span><span>${fmt(m)}${unit}</span><span>${fmt(Math.round(m * (n ?? r.portionen) * 100) / 100)}${unit}</span>`;
+  }).join("");
+  return `<div class="ing"><span class="h">Zutat</span><span class="h">Portion</span><span class="h">× ${r.portionen}</span>${rows}</div>`;
+}
+function viewRezepte(){
+  const all = REZ.rezepte;
+  return `<div class="section">${all.map(r => `<details><summary>${r.name}</summary><div class="section">${chips(r.makros)}${ingList(r)}<p class="note">${r.hinweis}</p></div></details>`).join("")}</div>`;
 }
 
 
-/* ---------- Fußgänger ---------- */
-const SKIN='#E9B48A', HAIR='#4A3426', PANTS='#34384A';
-function personSVG(view){
-  /* Einheit: Höhe 1, Füße bei y=0. view: right | left | toward | away */
-  const shirt=COLORS.ped, w=.085;
-  if(view==='right'||view==='left'){
-    const g=`<path d="M0,-.47 L.14,0 M0,-.47 L-.12,0" stroke="${PANTS}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`+
-      `<path d="M.14,0 h.06" stroke="#222" stroke-width=".05" stroke-linecap="round"/><path d="M-.12,0 h.06" stroke="#222" stroke-width=".05" stroke-linecap="round"/>`+
-      `<path d="M0,-.75 L-.1,-.53" stroke="#6E3FA0" stroke-width=".06" stroke-linecap="round"/>`+
-      `<path d="M0,-.47 L.01,-.79" stroke="${shirt}" stroke-width=".16" stroke-linecap="round"/>`+
-      `<path d="M.01,-.75 L.12,-.54" stroke="${shirt}" stroke-width=".06" stroke-linecap="round"/>`+
-      `<circle cx=".015" cy="-.9" r=".085" fill="${SKIN}"/><path d="M-.07,-.88 A.088,.088 0 0 1 .09,-.95 L.02,-.9 Z" fill="${HAIR}"/>`+
-      `<circle cx=".085" cy="-.885" r=".022" fill="${SKIN}"/>`;
-    return view==='left'?`<g transform="scale(-1,1)">${g}</g>`:g;
-  }
-  let g=`<path d="M-.05,-.47 L-.065,0 M.05,-.47 L.065,0" stroke="${PANTS}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`+
-    `<path d="M-.115,-.75 L-.135,-.5 M.115,-.75 L.135,-.5" stroke="${shirt}" stroke-width=".06" stroke-linecap="round"/>`+
-    `<path d="M0,-.49 L0,-.77" stroke="${shirt}" stroke-width=".22" stroke-linecap="round"/>`;
-  if(view==='toward') g+=`<circle cy="-.9" r=".085" fill="${SKIN}"/><path d="M-.085,-.9 A.085,.085 0 0 1 .085,-.9 Q0,-.95 -.085,-.9Z" fill="${HAIR}"/><circle cx="-.03" cy="-.89" r=".013" fill="#222"/><circle cx=".03" cy="-.89" r=".013" fill="#222"/>`;
-  else g+=`<circle cy="-.9" r=".088" fill="${HAIR}"/>`;
-  return g;
-}
-function pedView(ped){ const dx=ped.to[0]-ped.pos[0], dz=ped.to[1]-ped.pos[1]; return Math.abs(dx)>Math.abs(dz)?(dx>0?'right':'left'):(dz>0?'away':'toward'); }
-function fpPed(ped){
-  const [X,Z]=ped.pos, s=F/Z, h=2.2*s, [x,y]=P(X,Z), col=COLORS.ped;
-  /* Laufweg auf dem Boden: gestrichelt mit Pfeil */
-  const sp=[]; for(let i=0;i<=12;i++){ const t=i/12; sp.push(P(X+(ped.to[0]-X)*t, Z+(ped.to[1]-Z)*t)); }
-  const tip=sp[12], pre=sp[10], d=[tip[0]-pre[0],tip[1]-pre[1]], n=Math.hypot(d[0],d[1])||1, u=[d[0]/n,d[1]/n], b=[tip[0]-u[0]*9,tip[1]-u[1]*9], q=[-u[1],u[0]];
-  const tr=[]; for(let i=0;i<=6;i++){ const t=i/6; tr.push(P(ped.from[0]+(X-ped.from[0])*t, ped.from[1]+(Z-ped.from[1])*t)); }
-  let g=`<polyline points="${tr.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2" stroke-dasharray="1.5 4" stroke-linecap="round" opacity=".55"/>`;
-  g+=`<polyline points="${sp.slice(0,-1).map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round"/>`;
-  g+=`<polygon points="${tip[0]},${tip[1]} ${b[0]+q[0]*6},${b[1]+q[1]*6} ${b[0]-q[0]*6},${b[1]-q[1]*6}" fill="${col}"/>`;
-  /* Figur bewegt sich ein Stück in Laufrichtung */
-  const m=P(X+(ped.to[0]-X)*.12, Z+(ped.to[1]-Z)*.12), mdx=(m[0]-x).toFixed(1), mdy=(m[1]-y).toFixed(1);
-  g+=`<g class="tap" data-party="ped"><ellipse cx="${x}" cy="${y}" rx="${.32*s}" ry="${.09*s}" fill="rgba(0,0,0,.22)"/>`+
-     `<g><animateTransform attributeName="transform" type="translate" values="0 0;${mdx} ${mdy}" dur="1.8s" repeatCount="indefinite"/>`+
-     `<g transform="translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${h.toFixed(2)})">${personSVG(pedView(ped))}</g></g>`+
-     bubble(x, y-h-12, {id:'ped'}) + `</g>`;
-  return g;
-}
-function mapXY(X,Z){ return [150+X*8.571, 150-(Z-11.5)*8.571]; }
-function topPed(ped){
-  const [x,y]=mapXY(...ped.pos), [tx,ty]=mapXY(...ped.to), [fx,fy]=mapXY(...ped.from), col=COLORS.ped;
-  const d=[tx-x,ty-y], n=Math.hypot(d[0],d[1])||1, u=[d[0]/n,d[1]/n], b=[tx-u[0]*8,ty-u[1]*8], q=[-u[1],u[0]], ang=Math.atan2(u[1],u[0])*180/Math.PI;
-  return `<path d="M${fx},${fy}L${x},${y}" stroke="${col}" stroke-width="2" stroke-dasharray="1.5 3.5" stroke-linecap="round" opacity=".55"/>`+
-    `<path d="M${x},${y}L${b[0]},${b[1]}" stroke="${col}" stroke-width="2.6" stroke-dasharray="5 3.5"/>`+
-    `<polygon points="${tx},${ty} ${b[0]+q[0]*5},${b[1]+q[1]*5} ${b[0]-q[0]*5},${b[1]-q[1]*5}" fill="${col}"/>`+
-    `<g transform="translate(${x},${y}) rotate(${ang})"><ellipse rx="4" ry="7" fill="${col}" stroke="#fff" stroke-width="1"/><circle cx="1" r="3.4" fill="${HAIR}"/><circle cx="3.6" r="1" fill="${SKIN}"/></g>`;
+function openMenu(open){
+  document.getElementById("drawer").hidden = !open;
+  document.getElementById("scrim").hidden = !open;
 }
 
-/* ---------- Fahrersicht (Perspektive) ----------
-   Welt: X quer (Mittellinie deiner Straße = 0, deine Spur 0…3.5), Z nach vorn.
-   Querstraße liegt zwischen Z=8 und Z=15. */
-const F=200, CAMX=1.5, CAMH=3.5, HZ=96;
-function P(X,Z){ return [200+F*(X-CAMX)/Z, HZ+F*CAMH/Z]; }
-function pt(X,Z){ const p=P(X,Z); return p[0].toFixed(1)+','+p[1].toFixed(1); }
-function quad(x1,x2,z1,z2,cls){ return `<polygon class="${cls}" points="${pt(x1,z1)} ${pt(x2,z1)} ${pt(x2,z2)} ${pt(x1,z2)}"/>`; }
-const WA = {
-  S:{entry:[1.75,7.6], exitIn:[-1.75,7.6], exitOut:[-1.75,4.6], front:[1.75,4.7]},
-  N:{entry:[-1.75,15.4],exitIn:[1.75,15.4], exitOut:[1.75,34],  front:[-1.75,16.4]},
-  E:{entry:[3.6,13.25], exitIn:[3.6,9.75],  exitOut:[11,9.75],  front:[3.75,13.25]},
-  W:{entry:[-3.6,9.75], exitIn:[-3.6,13.25],exitOut:[-11,13.25],front:[-3.75,9.75]}
-};
-function fpArrow(c){
-  const a=WA[c.arm], ex=WA[EXIT[c.arm][c.move]], e=a.entry, xi=ex.exitIn, xo=ex.exitOut;
-  let k;
-  if(c.move==='straight') k=[(e[0]+xi[0])/2,(e[1]+xi[1])/2];
-  else if(c.arm==='S'||c.arm==='N') k=[e[0],xi[1]]; else k=[xi[0],e[1]];
-  const L=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t], w=[];
-  for(let i=0;i<=6;i++) w.push(L(a.front,e,i/6));
-  for(let i=1;i<=18;i++){const t=i/18,u=1-t; w.push([u*u*e[0]+2*u*t*k[0]+t*t*xi[0],u*u*e[1]+2*u*t*k[1]+t*t*xi[1]]);}
-  for(let i=1;i<=10;i++) w.push(L(xi,xo,i/10));
-  const sp=w.map(p=>P(p[0],p[1])), tip=sp[sp.length-1], pre=sp[sp.length-3];
-  const d=[tip[0]-pre[0],tip[1]-pre[1]], n=Math.hypot(d[0],d[1])||1, u=[d[0]/n,d[1]/n], b=[tip[0]-u[0]*10,tip[1]-u[1]*10], q=[-u[1],u[0]];
-  const col=c.kind==='rtw'?'#D32F2F':(COLORS[c.id]||'#888');
-  return `<polyline points="${sp.slice(0,-1).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>`+
-    `<polygon points="${tip[0]},${tip[1]} ${b[0]+q[0]*6.5},${b[1]+q[1]*6.5} ${b[0]-q[0]*6.5},${b[1]-q[1]*6.5}" fill="${col}" opacity=".9"/>`;
-}
-let PICKS={};
-function pickBadge(x,y,id){ return PICKS[id]?`<circle cx="${x}" cy="${y}" r="8.5" fill="#1F1E1D" stroke="#fff" stroke-width="1.5"/><text class="clabel" x="${x}" y="${y+3.6}" style="font-size:10.5px">${PICKS[id]}</text>`:''; }
-function bubble(x,y,c){
-  const rtw=c.kind==='rtw', col=rtw?'#D32F2F':COLORS[c.id], t=rtw?'RTW':c.id==='ped'?'F':c.id;
-  return `<circle cx="${x}" cy="${y}" r="${rtw?12:9.5}" fill="${col}" stroke="#fff" stroke-width="1.6"/><text class="clabel" x="${x}" y="${y+3.6}" style="font-size:${rtw?8:10.5}px">${t}</text>`+pickBadge(x+13,y-8,c.id);
-}
-function sideCar(c,X,Z,dir){
-  const s=F/Z, [cx,gy]=P(X,Z), L=4.3*s, rtw=c.kind==='rtw', col=rtw?'#F4F4F1':COLORS[c.id];
-  const f=v=>(cx+dir*v*L).toFixed(1), bb=gy-.2*s, Hb=(rtw?1.9:.72)*s, bt=bb-Hb, dark='rgba(20,30,40,.6)';
-  let g=`<ellipse cx="${cx}" cy="${gy}" rx="${L*.52}" ry="${.14*s}" fill="rgba(0,0,0,.22)"/>`;
-  g+=`<rect x="${cx-L/2}" y="${bt}" width="${L}" height="${Hb}" rx="${.24*s}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>`;
-  let top;
-  if(!rtw){
-    const Hc=.55*s; top=bt-Hc;
-    g+=`<polygon points="${f(-.37)},${bt+1} ${f(-.29)},${bt-Hc} ${f(.05)},${bt-Hc} ${f(.24)},${bt+1}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".8"/>`;
-    g+=`<polygon points="${f(-.32)},${bt} ${f(-.26)},${bt-Hc*.8} ${f(-.08)},${bt-Hc*.8} ${f(-.08)},${bt}" fill="${dark}"/>`;
-    g+=`<polygon points="${f(-.04)},${bt} ${f(-.04)},${bt-Hc*.8} ${f(.04)},${bt-Hc*.8} ${f(.19)},${bt}" fill="${dark}"/>`;
-  } else {
-    top=bt-.3*s;
-    g+=`<rect x="${cx-L/2}" y="${bt+Hb*.56}" width="${L}" height="${Hb*.12}" fill="#D32F2F"/>`;
-    g+=`<polygon points="${f(.34)},${bt+Hb*.1} ${f(.49)},${bt+Hb*.1} ${f(.49)},${bt+Hb*.45} ${f(.34)},${bt+Hb*.45}" fill="${dark}"/>`;
-    g+=`<circle class="blue" cx="${f(.32)}" cy="${bt-.1*s}" r="${.17*s}"/><circle class="blue b2" cx="${f(.12)}" cy="${bt-.1*s}" r="${.17*s}"/>`;
-  }
-  g+=`<circle cx="${f(-.3)}" cy="${bb}" r="${.33*s}" fill="#222"/><circle cx="${f(.3)}" cy="${bb}" r="${.33*s}" fill="#222"/>`;
-  if(c.move!=='straight'){ const r=Math.max(2.4,.14*s); g+=`<circle class="blink" cx="${f(.49)}" cy="${bt+Hb*.32}" r="${r}"/><circle class="blink" cx="${f(-.49)}" cy="${bt+Hb*.32}" r="${r}"/>`; }
-  return g + bubble(cx, top-13, c);
-}
-function frontCar(c,X,Z){
-  const s=F/Z, [cx,gy]=P(X,Z), col=COLORS[c.id]||'#888', dark='rgba(20,30,40,.6)';
-  let g=`<ellipse cx="${cx}" cy="${gy}" rx="${1.05*s}" ry="${.14*s}" fill="rgba(0,0,0,.22)"/>`;
-  g+=`<rect x="${cx-.82*s}" y="${gy-.3*s}" width="${.26*s}" height="${.3*s}" rx="${.06*s}" fill="#222"/><rect x="${cx+.56*s}" y="${gy-.3*s}" width="${.26*s}" height="${.3*s}" rx="${.06*s}" fill="#222"/>`;
-  g+=`<polygon points="${cx-.74*s},${gy-.86*s} ${cx-.56*s},${gy-1.42*s} ${cx+.56*s},${gy-1.42*s} ${cx+.74*s},${gy-.86*s}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".7"/>`;
-  g+=`<polygon points="${cx-.64*s},${gy-.88*s} ${cx-.5*s},${gy-1.34*s} ${cx+.5*s},${gy-1.34*s} ${cx+.64*s},${gy-.88*s}" fill="${dark}"/>`;
-  g+=`<rect x="${cx-.9*s}" y="${gy-.9*s}" width="${1.8*s}" height="${.66*s}" rx="${.18*s}" fill="${col}" stroke="rgba(0,0,0,.3)" stroke-width=".7"/>`;
-  g+=`<circle cx="${cx-.6*s}" cy="${gy-.62*s}" r="${.13*s}" fill="#FFF8D6"/><circle cx="${cx+.6*s}" cy="${gy-.62*s}" r="${.13*s}" fill="#FFF8D6"/>`;
-  /* Entgegenkommend: sein links = dein rechts */
-  const r=Math.max(2.4,.13*s);
-  if(c.move==='left')  g+=`<circle class="blink" cx="${cx+.86*s}" cy="${gy-.74*s}" r="${r}"/>`;
-  if(c.move==='right') g+=`<circle class="blink" cx="${cx-.86*s}" cy="${gy-.74*s}" r="${r}"/>`;
-  return g + bubble(cx, gy-1.42*s-13, c);
-}
-function fpStopLine(arm,type){
-  if(!type) return '';
-  let o='';
-  if(arm==='S'){ if(type==='solid') return quad(0,3.5,7.45,7.85,'mkf'); for(let x=0;x<3.4;x+=.62) o+=quad(x,x+.36,7.5,7.85,'mkf'); return o; }
-  if(arm==='N'){ if(type==='solid') return quad(-3.5,0,15.15,15.6,'mkf'); for(let x=-3.5;x<-.1;x+=.62) o+=quad(x,x+.36,15.15,15.6,'mkf'); return o; }
-  const x1=arm==='W'?-3.95:3.6, z1=arm==='W'?8:11.5;
-  if(type==='solid') return quad(x1,x1+.35,z1,z1+3.5,'mkf');
-  for(let z=z1;z<z1+3.4;z+=.62) o+=quad(x1,x1+.35,z,z+.36,'mkf'); return o;
-}
-function lineType(s,a){ const sg=(s.signs||{})[a]||[]; return (sg.includes('206')||(s.lights||{})[a])?'solid':sg.includes('205')?'dash':''; }
-function postStack(s){
-  const sg=(s.signs||{}).S||[], li=(s.lights||{}).S, gp=s.gp==='S', main=sg.filter(t=>t!=='z')[0], z=sg.includes('z');
-  if(!main&&!li&&!gp) return '';
-  const items=[];
-  if(li) items.push([46,(x,y)=>`<g transform="translate(${x},${y}) scale(1.5)">${lightSVG(li)}</g>`]);
-  if(gp) items.push([20,(x,y)=>`<g transform="translate(${x},${y}) scale(1.45)">${signSVG('720')}</g>`]);
-  if(main) items.push([37,(x,y)=>`<g transform="translate(${x},${y}) scale(1.65)">${signSVG(main)}</g>`]);
-  if(z) items.push([34,(x,y)=>`<g transform="translate(${x},${y}) scale(1.36)">${zusatzSVG('S',s.arms.split(''),s.main)}</g>`]);
-  const [bx,by]=P(5.3,5.6), total=items.reduce((a,i)=>a+i[0]+4,0);
-  let y=by-56-total, g=`<line x1="${bx}" y1="${by}" x2="${bx}" y2="${y+8}" stroke="#8B9196" stroke-width="3.2"/>`;
-  items.forEach(([h,fn])=>{ g+=fn(bx,y+h/2); y+=h+4; });
-  return g;
-}
-function fpScene(s){
-  const arms=s.arms.split(''), has=a=>arms.includes(a), du=s.cars.find(c=>c.id==='du');
-  let o=`<svg class="scene fp" viewBox="0 0 400 300" role="img" aria-label="Fahrersicht: ${s.title}">`;
-  o+=`<defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sky1)"/><stop offset="1" style="stop-color:var(--sky2)"/></linearGradient></defs>`;
-  o+=`<rect width="400" height="${HZ+1}" fill="url(#skyg)"/><rect y="${HZ}" width="400" height="${300-HZ}" class="grass"/>`;
-  o+=`<path d="M0,${HZ+1} V${HZ-5} Q30,${HZ-13} 70,${HZ-6} T150,${HZ-8} T230,${HZ-4} T310,${HZ-10} T400,${HZ-5} V${HZ+1}Z" class="trees"/>`;
-  const L=has('W')?-140:-3.5, R=has('E')?140:3.5;
-  /* Gehwege (2 m) */
-  if(has('N')) o+=quad(-5.5,5.5,15,900,'walk');
-  o+=quad(has('W')?-140:-5.5, has('E')?140:5.5, 6,17,'walk');
-  if(s.drive!=='S') o+=quad(-5.5,5.5,2.4,8,'walk');
-  if(has('N')) o+=quad(-3.5,3.5,15,900,'road');
-  else { const a=P(-14,17.4), b=P(14,17.4), h=F*1.5/17.4; o+=`<rect x="${a[0]}" y="${a[1]-h}" width="${b[0]-a[0]}" height="${h}" rx="4" class="hedge"/>`; }
-  o+=quad(L,R,8,15,'road');
-  if(s.drive==='S'){ o+=quad(-3.5,3.5,2.4,6,'drive'); o+=quad(-3.5,3.5,7.85,8,'curbfp'); }
-  else o+=quad(-3.5,3.5,2.4,8,'road');
-  if(s.drive!=='S') for(let z=3;z<7.3;z+=2) o+=quad(-.09,.09,z,z+1,'mkf');
-  if(has('N')) for(let z=16.5;z<160;z*=1.3) o+=quad(-.1,.1,z,z*1.13,'mkf');
-  for(let x=Math.floor(L/3)*3;x<R;x+=3){ if(x+1.6>-3.7&&x<3.7) continue; o+=quad(x,x+1.6,11.35,11.65,'mkf'); }
-  ['S','N','E','W'].forEach(a=>{ if(has(a)&&s.drive!==a) o+=fpStopLine(a,lineType(s,a)); });
-  if(s.zebra==='N') for(let x=-3.3;x<3.4;x+=.95) o+=quad(x,x+.5,17.3,19.9,'mkf');
-  s.cars.forEach(c=>{ o+=fpArrow(c); });
-  const byZ={N:16.6,E:13.25,W:9.75}, items=[];
-  s.cars.filter(c=>c.id!=='du').forEach(c=>items.push([byZ[c.arm],()=>{
-    let g=`<g class="tap" data-party="${c.id}">`;
-    if(c.arm==='N') g+=frontCar(c,-1.75,16.6);
-    else if(c.arm==='E') g+=sideCar(c,5.9,13.25,-1);
-    else if(c.arm==='W') g+=sideCar(c,-5.9,9.75,1);
-    return g+`</g>`; }]));
-  (s.peds||[]).forEach(pd=>items.push([pd.pos[1],()=>fpPed(pd)]));
-  items.sort((a,b)=>b[0]-a[0]).forEach(it=>{ o+=it[1](); });
-  if(s.police){ const p=P(0,11.5); o+=`<text x="${p[0]}" y="${p[1]}" font-size="${(1.9*F/11.5).toFixed(1)}" text-anchor="middle">👮</text>`; }
-  o+=postStack(s);
-  o+=`<path class="tap" data-party="du" d="M-10,300 V285 Q200,256 410,285 V300Z" fill="${COLORS.du}"/><path d="M70,281 Q200,263 330,281" stroke="rgba(255,255,255,.32)" stroke-width="2" fill="none"/>`;
-  o+=`<text class="clabel" x="200" y="290" style="font-size:11px">Du</text>`+pickBadge(222,285,'du');
-  if(du.move==='left')  o+=`<path class="blinkg" d="M24,284 l11,-8 v4.5 h11 v7 h-11 v4.5z"/>`;
-  if(du.move==='right') o+=`<path class="blinkg" d="M376,284 l-11,-8 v4.5 h-11 v7 h11 v4.5z"/>`;
-  return o+`</svg>`;
+function render(){
+  document.getElementById("kw").textContent = `KW ${kw(new Date())}`;
+  const { salat, abend } = auswahl();
+  document.getElementById("wTitle").textContent = state.wahl === "frei" ? "Eigene Kombination" : `Woche ${state.wahl}`;
+  document.getElementById("wSub").textContent = `${salat.kurz} + ${abend.kurz}`;
+  document.getElementById("dWeeks").innerHTML = REZ.rotation.map(w => `<button class="d-item" data-w="${w.woche}" aria-current="${state.wahl === w.woche}"><b>Woche ${w.woche}</b><span>${byId[w.salat].kurz} + ${byId[w.abend].kurz}</span></button>`).join("");
+  document.getElementById("dFree").setAttribute("aria-current", state.wahl === "frei");
+  document.getElementById("freePick").hidden = state.wahl !== "frei";
+  document.querySelectorAll(".switch button").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === state.tab));
+  document.getElementById("view").innerHTML = { woche: viewWoche, einkauf: viewEinkauf, prep: viewPrep, rezepte: viewRezepte }[state.tab]();
 }
 
-/* ---------- Speicher ---------- */
-const KEY='vorfahrt-coach-v1';
-let stats = {};
-try{ stats = JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ stats={}; }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(stats)); }catch(e){} }
+const opt = (list, sel) => list.map(r => `<option value="${r.id}" ${r.id === sel ? "selected" : ""}>${r.name}</option>`).join("");
+document.getElementById("selSalat").innerHTML = opt(salate, state.salat);
+document.getElementById("selAbend").innerHTML = opt(abende, state.abend);
+document.getElementById("selSalat").onchange = e => { state.salat = e.target.value; save(); render(); };
+document.getElementById("selAbend").onchange = e => { state.abend = e.target.value; save(); render(); };
 
-/* ---------- UI ---------- */
-const $ = id => document.getElementById(id);
-const inner=$('inner'), chat=$('chat'), cbox=$('cbox');
-let state = {mode:null, queue:[], idx:0, right:0, answered:0, cur:null, retried:new Set(), cardEl:null};
-
-function esc(t){return t.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
-function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function scrollDown(){ requestAnimationFrame(()=>chat.scrollTo({top:chat.scrollHeight,behavior:'smooth'})); }
-
-function addAI(html){
-  const m=document.createElement('div'); m.className='msg ai';
-  m.innerHTML=`<div class="avatar">${WHEEL}</div><div class="body">${html}</div>`;
-  inner.appendChild(m); scrollDown(); return m;
-}
-function addUser(text){
-  const m=document.createElement('div'); m.className='msg user';
-  m.innerHTML=`<div class="bubble">${esc(text)}</div>`; inner.appendChild(m); scrollDown();
-}
-function setProgress(){
-  const p=$('progress');
-  if(!state.mode){p.hidden=true;return;}
-  p.hidden=false; p.textContent=`${Math.min(state.idx+1,state.queue.length)} / ${state.queue.length}`;
-}
-function modeName(m){ return m==='all'?'Alle Situationen':m==='fehler'?'Fehler wiederholen':CATS[m]; }
-function idsFor(mode){
-  if(mode==='all') return SC.map(s=>s.id);
-  if(mode==='fehler') return SC.filter(s=>stats[s.id] && stats[s.id].last===false).map(s=>s.id);
-  return SC.filter(s=>s.cat===mode).map(s=>s.id);
-}
-
-function renderNav(){
-  const modes=['all',...Object.keys(CATS),'fehler'];
-  $('nav').innerHTML = modes.map(m=>`<button class="navbtn ${state.mode===m?'active':''}" data-mode="${m}"><span>${modeName(m)}</span><span class="cnt">${idsFor(m).length}</span></button>`).join('');
-  $('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{ closeSide(); start(b.dataset.mode); });
-  $('stats').innerHTML = Object.keys(CATS).map(c=>{
-    const ids=SC.filter(s=>s.cat===c), ok=ids.filter(s=>stats[s.id]&&stats[s.id].last).length;
-    return `<div class="stat"><div class="row"><span>${CATS[c]}</span><span>${ok}/${ids.length}</span></div><div class="bar"><i style="width:${ids.length?ok/ids.length*100:0}%"></i></div></div>`;
-  }).join('');
-}
-
-function welcome(){
-  state={mode:null,queue:[],idx:0,right:0,answered:0,cur:null,retried:new Set(),cardEl:null};
-  $('topTitle').textContent='Vorfahrt-Coach'; setProgress(); renderNav();
-  const done = SC.filter(s=>stats[s.id]&&stats[s.id].last).length;
-  inner.innerHTML = `<div class="welcome"><div class="mark">${WHEEL}</div>
-    <h1>Wer hat hier Vorfahrt?</h1>
-    <p>Trainier Vorfahrtstraßen, abknickende Vorfahrt und knifflige Kreuzungen – Situation für Situation, mit Auflösung.${done?` Du hast schon ${done} von ${SC.length} sicher.`:''}</p>
-    <div class="chips">
-      <button class="chip" data-mode="all">🚦 Alle Situationen</button>
-      <button class="chip" data-mode="vs">🔶 Vorfahrtstraße</button>
-      <button class="chip" data-mode="abk">↪️ Abknickende Vorfahrt</button>
-      <button class="chip" data-mode="fuss">🚶 Fußgänger</button>
-      <button class="chip" data-mode="sonder">🅿️ Sonderfälle</button>
-      <button class="chip" data-act="sheet">📋 Spickzettel</button>
-    </div></div>`;
-  inner.querySelectorAll('.chip').forEach(b=>b.onclick=()=> b.dataset.act==='sheet' ? showSheet() : start(b.dataset.mode));
-  cbox.innerHTML='';
-}
-
-function start(mode){
-  const ids=idsFor(mode);
-  state={mode,queue:shuffle(ids),idx:0,right:0,answered:0,cur:null,retried:new Set(),cardEl:null};
-  inner.innerHTML=''; renderNav();
-  $('topTitle').textContent=modeName(mode);
-  if(!ids.length){
-    addAI(`<p>Gerade gibt es nichts zu wiederholen – alle Situationen, die du schon gemacht hast, sitzen. 👍</p>`);
-    setProgress(); endActions(); return;
-  }
-  addUser(modeName(mode));
-  addAI(`<p>Okay, ${ids.length} Situationen. Geh jedes Mal gleich vor: <b>erst Schilder und Ampeln</b>, dann schauen, wer auf der Vorfahrtstraße ist, dann die Abbiegeregeln.</p><p>Falsch beantwortete Situationen kommen in dieser Runde nochmal.</p>`);
-  next();
-}
-
-function partyList(s){ return ['du', ...s.cars.filter(c=>c.id!=='du').map(c=>c.id), ...((s.peds||[]).length?['ped']:[])]; }
-function partyLabel(s,p){ if(p==='du') return 'Du'; if(p==='ped') return 'Fußgänger'; const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'Rettungswagen':p; }
-function partyColor(s,p){ const c=s.cars.find(k=>k.id===p); return c&&c.kind==='rtw'?'#D32F2F':(COLORS[p]||'#888'); }
-function fmtOrder(s){ return s.order.map(g=>g.length>1?g.map(p=>partyLabel(s,p)).join(' + ')+' (gleichzeitig)':partyLabel(s,g[0])).join(' → '); }
-function duFirst(s){ return s.order[0].length===1 && s.order[0][0]==='du'; }
-
-function next(){
-  if(state.idx>=state.queue.length){ finish(); return; }
-  setProgress();
-  const s = SC.find(x=>x.id===state.queue[state.idx]); state.cur=s; state.rel=rel(s); state.phase='yn'; PICKS={};
-  const m = addAI(`<div class="label">${CATS[s.cat]}</div>
-    <div class="card"><div class="sc">${fpScene(state.rel)}</div>
-    <div class="legend"><span>Deine Sicht – lies dein Schild</span><span>Pfeile = geplante Richtung</span><span>Blinker blinkt</span></div></div>
-    ${s.hint?`<p class="hint">${esc(s.hint)}</p>`:''}<p><b>Kannst du einfach fahren?</b></p>`);
-  state.cardEl = m.querySelector('.sc');
-  cbox.innerHTML = `<div class="chint">Hast du gerade freie Fahrt?</div><div class="parties">
-    <button class="party yn" id="yesBtn"><i style="background:var(--ok)"></i>Ja</button>
-    <button class="party yn" id="noBtn"><i style="background:var(--bad)"></i>Nein</button></div>`;
-  $('yesBtn').onclick=()=>answerYN(true); $('noBtn').onclick=()=>answerYN(false);
-}
-
-function answerYN(yes){
-  const s=state.cur; if(!s||state.phase!=='yn') return;
-  addUser(yes?'Ja':'Nein');
-  const first=duFirst(s);
-  if(yes!==first){ finishSit(false, first?'Doch – hier darfst du einfach fahren.':'Nein – du musst hier warten.'); return; }
-  if(first){ finishSit(true,'Richtig – du hast freie Fahrt.'); return; }
-  if(partyList(s).length<=2){ finishSit(true,'Richtig – du musst warten.'); return; }
-  state.phase='order';
-  addAI(`<div class="verdict ok">✓ Richtig, du musst warten</div><p><b>Wer fährt wann?</b> Wähl die richtige Reihenfolge.</p>`);
-  orderUI();
-}
-
-function perms(a){ if(a.length<=1) return [a]; const r=[]; a.forEach((x,i)=>perms(a.slice(0,i).concat(a.slice(i+1))).forEach(q=>r.push([x,...q]))); return r; }
-function fitsOrder(s,seq){ let i=0; for(const g of s.order){ const part=seq.slice(i,i+g.length); i+=g.length; if(!g.every(x=>part.includes(x))) return false; } return true; }
-function orderUI(){
-  const s=state.cur;
-  const wrong=shuffle(perms(partyList(s)).filter(q=>!fitsOrder(s,q))).slice(0,3).map(q=>[q.map(x=>partyLabel(s,x)).join(' → '),0]);
-  const opts=shuffle([[fmtOrder(s),1],...wrong]);
-  cbox.innerHTML = `<div class="chint">Wähle die richtige Reihenfolge</div>` + opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${esc(o[0])}</span></button>`).join('');
-  cbox.querySelectorAll('.opt').forEach(btn=>btn.onclick=()=>pickOrder(opts[+btn.dataset.i]));
-  state.orderOpts=opts;
-}
-function pickOrder(o){
-  if(!state.cur||state.phase!=='order') return;
-  addUser(o[0]);
-  finishSit(!!o[1], o[1]?'Richtig – Reihenfolge stimmt.':'Reihenfolge nicht ganz.');
-}
-
-function finishSit(ok, head){
-  const s=state.cur; state.cur=null; state.phase='done';
-  state.answered++; if(ok) state.right++;
-  const st = stats[s.id] || {seen:0,right:0};
-  st.seen++; if(ok) st.right++; st.last=ok; stats[s.id]=st; save();
-  PICKS={};
-  if(state.cardEl) state.cardEl.innerHTML = fpScene(state.rel) + `<div class="sol-label">Auflösung von oben · ${esc(s.title)}${s.cat==='abk'?'<br>Jedes Zusatzzeichen ist aus Sicht seiner eigenen Zufahrt gezeichnet – deshalb sieht es an jeder Ecke anders aus.':''}</div>` + scene(state.rel,true);
-  addAI(`<div class="verdict ${ok?'ok':'bad'}">${ok?'✓':'✗'} ${esc(head)}</div>
-    ${duFirst(s)?'':`<p>Reihenfolge: <b>${esc(fmtOrder(s))}</b></p>`}
-    <p>${esc(s.ex)}</p>
-    <p style="font-size:14px;color:var(--muted);font-family:var(--sans)">${s.main?'Gelb markiert: Verlauf der Vorfahrtstraße. ':''}Zahlen im Bild: Reihenfolge.</p>
-    <div class="tip"><b>Merke:</b> ${esc(s.tip)}</div>`);
-  if(!ok && !state.retried.has(s.id)){
-    state.retried.add(s.id);
-    state.queue.splice(Math.min(state.idx+4,state.queue.length),0,s.id);
-  }
-  state.idx++; renderNav(); setProgress();
-  const last = state.idx>=state.queue.length;
-  cbox.innerHTML = `<div class="actions"><button class="primary" id="nextBtn">${last?'Ergebnis ansehen':'Nächste Situation'} →</button></div>`;
-  $('nextBtn').onclick=()=>{ cbox.innerHTML=''; next(); };
-}
-
-function finish(){
-  $('progress').hidden=true;
-  const pct = state.answered ? Math.round(state.right/state.answered*100) : 0;
-  const msg = pct>=90 ? 'Stark – das sitzt.' : pct>=70 ? 'Solide. Die Fehler kommen unter „Fehler wiederholen“ nochmal.' : 'Da ist noch Luft. Schau dir den Spickzettel an und wiederhol die Fehler.';
-  addAI(`<p><b>Runde fertig:</b> ${state.right} von ${state.answered} richtig (${pct} %).</p><p>${msg}</p>`);
-  endActions();
-}
-function endActions(){
-  const m=state.mode;
-  cbox.innerHTML = `<div class="actions">
-    <button class="ghost" id="a1">Spickzettel</button>
-    <button class="ghost" id="a2">Fehler wiederholen</button>
-    <button class="primary" id="a3">Nochmal</button></div>`;
-  $('a1').onclick=showSheet; $('a2').onclick=()=>start('fehler'); $('a3').onclick=()=>start(m&&m!=='fehler'?m:'all');
-}
-
-function mini(t){ return `<svg viewBox="-13 -13 26 26">${signSVG(t)}</svg>`; }
-function showSheet(){
-  closeSide();
-  if(inner.querySelector('.welcome')){ inner.innerHTML=''; $('topTitle').textContent='Spickzettel'; }
-  addUser('Spickzettel');
-  addAI(`<div class="sheet">
-    <h3>Wer regelt? (von oben nach unten)</h3>
-    <ol><li>Polizei</li><li>Ampel</li><li>Verkehrszeichen</li><li>Rechts vor links</li></ol>
-    <h3>Die wichtigsten Schilder</h3>
-    <div class="signrow">${mini('306')}<span><b>306 Vorfahrtstraße</b> – Vorfahrt bis zum Ende-Schild (307).</span></div>
-    <div class="signrow">${mini('301')}<span><b>301 Vorfahrt</b> – nur an der nächsten Kreuzung.</span></div>
-    <div class="signrow">${mini('205')}<span><b>205 Vorfahrt gewähren</b> – Vorfahrtstraße zuerst, rechtzeitig langsam werden.</span></div>
-    <div class="signrow">${mini('206')}<span><b>206 Stopp</b> – immer anhalten, dann Vorfahrt gewähren.</span></div>
-    <div class="signrow"><svg viewBox="-14 -14 28 28">${zusatzSVG('S',['N','E','S','W'],['S','W'])}</svg><span><b>Zusatzzeichen</b> – dicke Linie = Verlauf der abknickenden Vorfahrtstraße. Wer ihr folgt, blinkt.</span></div>
-    <h3>Abknickende Vorfahrt</h3>
-    <ul><li>Wer auf der dicken Linie ist, hat Vorrang vor den Nebenstraßen.</li><li>Nebenstraße gegen Nebenstraße: rechts vor links.</li><li>Beide auf der Vorfahrtstraße: Wer dem Knick folgt, fährt. Wer sie verlässt (auch geradeaus!) und kreuzt, wartet.</li><li>Dem Knick folgen = abbiegen: blinken.</li></ul>
-    <h3>Abbiegen</h3>
-    <ul><li>Linksabbieger lässt den Gegenverkehr durch – auch auf der Vorfahrtstraße und bei Grün.</li><li>Grünpfeil-Schild: erst anhalten, dann vorsichtig abbiegen.</li></ul>
-    <h3>Fußgänger</h3>
-    <ul><li>Beim Abbiegen: Wer die Straße quert, in die du einbiegst, geht vor – egal von welcher Seite.</li><li>Wer nur auf dem Gehweg entlangläuft, quert nicht – kein Konflikt.</li><li>Zebrastreifen: queren lassen. Liegt er hinter der Kreuzung, vor der Kreuzung warten.</li></ul>
-    <h3>Du bist immer der Letzte, wenn …</h3>
-    <ul><li>du aus einem Grundstück, Parkplatz oder verkehrsberuhigten Bereich kommst,</li><li>du über einen abgesenkten Bordstein fährst,</li><li>Blaulicht + Martinshorn kommt.</li></ul>
-    </div>`);
-  if(state.cur){ /* laufende Frage bleibt offen */ } else if(!state.mode){ cbox.innerHTML=`<div class="actions"><button class="primary" id="s1">Training starten →</button></div>`; $('s1').onclick=()=>start('all'); }
-}
-
-/* ---------- Sidebar mobil ---------- */
-function openSide(){ $('side').classList.add('open'); $('scrim').classList.add('show'); }
-function closeSide(){ $('side').classList.remove('open'); $('scrim').classList.remove('show'); }
-$('menuBtn').onclick=openSide; $('scrim').onclick=closeSide;
-$('newBtn').onclick=()=>{closeSide();welcome();}; $('newBtn2').onclick=welcome;
-$('sheetBtn').onclick=showSheet;
-$('resetBtn').onclick=()=>{ if(confirm('Gesamten Fortschritt löschen?')){ stats={}; save(); welcome(); } };
-
-/* Tastatur: 1–4 antworten, Enter = weiter */
-document.addEventListener('keydown',e=>{
-  if(state.phase==='yn' && /^[jJ]$/.test(e.key)) answerYN(true);
-  else if(state.phase==='yn' && /^[nN]$/.test(e.key)) answerYN(false);
-  else if(state.phase==='order' && /^[1-4]$/.test(e.key)){ const o=(state.orderOpts||[])[+e.key-1]; if(o) pickOrder(o); }
-  else if(e.key==='Enter'){ const b=$('nextBtn'); if(b) b.click(); }
+document.addEventListener("click", e => {
+  if (e.target.closest("#openMenu, #weekBtn")){ openMenu(true); return; }
+  if (e.target.closest("#closeMenu, #scrim")){ openMenu(false); return; }
+  const w = e.target.closest("[data-w]");
+  if (w){ const frei = w.dataset.w === "frei"; state.wahl = frei ? "frei" : +w.dataset.w; save(); render(); if (!frei) openMenu(false); return; }
+  const t = e.target.closest("[data-tab]");
+  if (t){ state.tab = t.dataset.tab; save(); render(); window.scrollTo(0, 0); return; }
+  const c = e.target.closest("[data-copy]");
+  if (c){ const txt = c.dataset.copy; const ok = () => { c.textContent = "Kopiert"; setTimeout(() => c.textContent = "Kopieren", 1500); };
+    try { navigator.clipboard.writeText(txt).then(ok, () => { c.textContent = txt; }); } catch { c.textContent = txt; } return; }
+  if (e.target.id === "reset"){ store.set("checks:" + key(), {}); render(); }
+  if (e.target.id === "resetPrep"){ store.set("prep:" + key(), {}); render(); }
 });
-
-welcome();
+document.addEventListener("keydown", e => { if (e.key === "Escape") openMenu(false); });
+document.addEventListener("change", e => {
+  const k = e.target.dataset && (e.target.dataset.k ?? e.target.dataset.p);
+  if (k === undefined) return;
+  const bucket = (e.target.dataset.k !== undefined ? "checks:" : "prep:") + key();
+  const s = store.get(bucket, {}); s[k] = e.target.checked; store.set(bucket, s);
+  e.target.closest(".item").classList.toggle("done", e.target.checked);
+  if (state.tab === "einkauf") render();
+});
+render();
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
 </body>
 </html>
