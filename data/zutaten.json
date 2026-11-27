@@ -529,6 +529,105 @@
   },
   "haltbar": true
  },
+ "kartoffeln": {
+  "name": "Kartoffeln, festkochend",
+  "abteilung": "Obst & Gemüse",
+  "packung": {
+   "einheit": "Netz 2 kg",
+   "menge": 2000
+  },
+  "naehrwerte": {
+   "basis": "100 g",
+   "kcal": 77,
+   "protein": 2,
+   "fett": 0.1
+  }
+ },
+ "zwiebel": {
+  "name": "Zwiebel",
+  "abteilung": "Obst & Gemüse",
+  "packung": {
+   "einheit": "Stück",
+   "menge": 100
+  },
+  "naehrwerte": {
+   "basis": "100 g",
+   "kcal": 40,
+   "protein": 1.1,
+   "fett": 0.1
+  }
+ },
+ "wiener": {
+  "name": "Wiener Würstchen (vakuumiert)",
+  "abteilung": "Kühltheke",
+  "packung": {
+   "einheit": "× 250 g",
+   "menge": 250
+  },
+  "naehrwerte": {
+   "basis": "100 g",
+   "kcal": 255,
+   "protein": 13,
+   "fett": 22
+  }
+ },
+ "salami": {
+  "name": "Salami in Scheiben",
+  "abteilung": "Kühltheke",
+  "packung": {
+   "einheit": "× 100 g",
+   "menge": 100
+  },
+  "naehrwerte": {
+   "basis": "100 g",
+   "kcal": 380,
+   "protein": 22,
+   "fett": 32
+  }
+ },
+ "pizzateig": {
+  "name": "Pizzateig (Kühlregal)",
+  "abteilung": "Kühltheke",
+  "packung": {
+   "einheit": "× 400 g",
+   "menge": 400
+  },
+  "naehrwerte": {
+   "basis": "100 g",
+   "kcal": 270,
+   "protein": 7.5,
+   "fett": 5
+  }
+ },
+ "mozzarella": {
+  "name": "Mozzarella (Kugel)",
+  "abteilung": "Kühltheke",
+  "packung": {
+   "einheit": "× 125 g",
+   "menge": 125
+  },
+  "naehrwerte": {
+   "basis": "100 g",
+   "kcal": 250,
+   "protein": 18,
+   "fett": 19
+  }
+ },
+ "senf": {
+  "name": "Senf",
+  "abteilung": "Vorrat",
+  "vorrat": true
+ },
+ "essig": {
+  "name": "Essig",
+  "abteilung": "Vorrat",
+  "vorrat": true
+ },
+ "bruehe": {
+  "name": "Gemüsebrühe",
+  "abteilung": "Vorrat",
+  "vorrat": true
+ },
  "mehl": {
   "name": "Mehl",
   "abteilung": "Vorrat",

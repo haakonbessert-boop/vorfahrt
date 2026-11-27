@@ -1,5 +1,5 @@
 {
- "_info": "Aufbau-Profil (zweite Person). Mengen pro Portion in der Basiseinheit der Zutat (g bzw. ml; Eier, Wraps, Gewürzgurken, Limette in Stück). Ein dritter Wert [zutat, menge, anzahl] heißt: nur für so viele Portionen (Freitags-Box mit gegartem Hähnchen aus der Packung, weil Sonntag gegartes Fleisch nur bis Donnerstag hält). Makros werden von make.py aus zutaten.json berechnet. Quelle: Second Brain, Ernährungsplan Aufbau-Rotation v6, 2026-11-01.",
+ "_info": "Aufbau-Profil (zweite Person). Mengen pro Portion in der Basiseinheit der Zutat (g bzw. ml; Eier, Wraps, Gewürzgurken, Limette in Stück). Ein dritter Wert [zutat, menge, anzahl] heißt: nur für so viele Portionen (Freitags-Box mit gegartem Hähnchen aus der Packung, weil Sonntag gegartes Fleisch nur bis Donnerstag hält). Makros werden von make.py aus zutaten.json berechnet. Quelle: Second Brain, Ernährungsplan Aufbau-Rotation, überarbeitet 2026-11-27 (Hähnchen max. jede 2. Woche, Kartoffelsalat statt Tex-Mex, Pizza statt Schüttelpizza, keine Paprika).",
  "ui": {
   "app_name": "Prep Box",
   "storage": "mpa.",
@@ -10,31 +10,31 @@
   "when_abend": "Mo–Fr, abends frisch",
   "frei_salat": "Mittag (5 Boxen)",
   "frei_text": "Mittag und Abendessen selbst kombinieren",
-  "einkauf_note": "Alles für Mo–Fr wird am Samstag gekauft. Kein Tiefkühler: Rohes Fleisch nur für die Boxen, die am Sonntag gekocht werden. Abends nur Zutaten, die ungeöffnet bis Freitag halten.",
+  "einkauf_note": "Alles für Mo–Fr wird am Samstag gekauft. Kein Tiefkühler: rohes Fleisch nur für die Boxen, die am Sonntag gekocht werden. Schinken, Würstchen und Abendessen-Zutaten halten ungeöffnet bis Freitag.",
   "frisch_titel": "Boxen sicher und frisch halten",
-  "frei_prep": "Sonntag: Mittags-Boxen für Mo–Fr vorbereiten, Hähnchen für Mo–Do braten, Freitag mit gegartem Hähnchen aus der Packung.",
+  "frei_prep": "Sonntag: Mittags-Boxen für Mo–Fr vorbereiten. Fleisch, das nicht am Sonntag gegart wird (Schinken, Würstchen), erst morgens aus der Packung dazu.",
   "tiefkuehl": false
  },
  "ziele": {
   "kcal_min": 2400,
   "kcal_max": 2500,
   "kcal_tag": 2450,
-  "protein_tag": 130
+  "protein_tag": 125
  },
  "rhythmus": {
   "einkauf": "Samstag",
   "prep": "Sonntag"
  },
  "salat_regeln": [
-  "Gekochte Nudeln und Hähnchen nach dem Kochen flach ausbreiten, abkühlen lassen und innerhalb von 2 Stunden in den Kühlschrank.",
-  "Am Sonntag gebratenes Hähnchen hält bis Donnerstag. Die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung (erst Freitagmorgen öffnen).",
-  "Knuspriges (Chips, Speck) und Dressings in ein Extra-Döschen, erst beim Essen dazu.",
-  "Boxen hinten in den Kühlschrank stellen, nicht in die Tür."
+  "Nudeln, Kartoffeln und Hähnchen nach dem Kochen flach ausbreiten, abkühlen lassen und innerhalb von 2 Stunden in den Kühlschrank.",
+  "Hähnchen gibt es höchstens jede zweite Woche (Woche 2 und 4). Am Sonntag gebratenes Hähnchen hält bis Donnerstag, die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung.",
+  "Schinken und Würstchen bleiben bis zum Morgen in der Packung und kommen erst dann in die Box.",
+  "Knuspriges (Speck) und Dressings in ein Extra-Döschen, erst beim Essen dazu."
  ],
  "rezepte": [
   {
    "id": "mittag-nudelsalat",
-   "name": "Klassischer Nudelsalat mit Hähnchen",
+   "name": "Klassischer Nudelsalat mit Schinken und Ei",
    "kurz": "Nudelsalat",
    "typ": "salat",
    "portionen": 5,
@@ -44,26 +44,16 @@
      150
     ],
     [
-     "haehnchen",
-     200,
-     4
-    ],
-    [
-     "haehnchen_gegart",
-     150,
-     1
-    ],
-    [
-     "oel",
-     5
+     "kochschinken",
+     200
     ],
     [
      "eier",
-     1
+     2
     ],
     [
      "gouda",
-     40
+     30
     ],
     [
      "mais",
@@ -74,16 +64,12 @@
      2
     ],
     [
-     "paprika",
-     90
-    ],
-    [
      "fruehlingszwiebel",
      0.2
     ],
     [
      "mayo",
-     50
+     40
     ],
     [
      "griech_joghurt",
@@ -94,11 +80,11 @@
      0
     ]
    ],
-   "hinweis": "Nudeln bissfest kochen, kalt abspülen. Hähnchen würfeln und braten. Dressing: Mayo, Joghurt, etwas Gurkenwasser, Salz, Pfeffer. Ei hart kochen, Gouda und Gurken würfeln.",
+   "hinweis": "Nudeln bissfest kochen, kalt abspülen. Eier hart kochen, Gouda und Gurken würfeln. Dressing: Mayo, Joghurt, etwas Gurkenwasser, Salz, Pfeffer. Schinken kommt erst morgens drauf: eine 200-g-Packung pro Box.",
    "makros": {
-    "kcal": 1420,
-    "protein": 89,
-    "fett": 58
+    "kcal": 1350,
+    "protein": 84,
+    "fett": 55
    }
   },
   {
@@ -159,84 +145,78 @@
    }
   },
   {
-   "id": "mittag-texmex",
-   "name": "Tex-Mex-Nudelsalat mit Hähnchen",
-   "kurz": "Tex-Mex-Nudeln",
+   "id": "mittag-kartoffelsalat",
+   "name": "Kartoffelsalat mit Ei und Wiener Würstchen",
+   "kurz": "Kartoffelsalat",
    "typ": "salat",
    "portionen": 5,
    "zutaten": [
     [
-     "nudeln",
-     150
+     "kartoffeln",
+     550
     ],
     [
-     "haehnchen",
-     200,
-     4
+     "eier",
+     3
     ],
     [
-     "haehnchen_gegart",
-     150,
-     1
+     "wiener",
+     200
     ],
     [
-     "oel",
-     5
+     "gewuerzgurken",
+     3
     ],
     [
-     "kidneybohnen",
-     100
+     "zwiebel",
+     30
     ],
     [
-     "mais",
-     80
-    ],
-    [
-     "cheddar",
-     40
-    ],
-    [
-     "salsa",
-     50
-    ],
-    [
-     "schmand",
-     40
-    ],
-    [
-     "paprika",
-     90
-    ],
-    [
-     "limette",
+     "fruehlingszwiebel",
      0.2
     ],
     [
-     "tortilla_chips",
-     25
+     "oel",
+     15
+    ],
+    [
+     "senf",
+     0
+    ],
+    [
+     "essig",
+     0
+    ],
+    [
+     "bruehe",
+     0
     ],
     [
      "gewuerze",
      0
     ]
    ],
-   "hinweis": "Hähnchen mit Taco-Gewürz braten. Nudeln, Bohnen, Mais, Paprika, Salsa und Schmand mischen, Limettensaft dazu. Cheddar drüber, Chips separat.",
+   "hinweis": "Schwäbisch mit Essig und Öl, hält dadurch besser als mit Mayo. Kartoffeln mit Schale kochen, pellen, warm in Scheiben schneiden. Dressing: heiße Brühe, Essig, Öl, Senf, fein gewürfelte Zwiebel, Salz, Pfeffer. Über die warmen Kartoffeln gießen, 30 min ziehen lassen. Gewürzgurken und Eier dazu. Würstchen kalt dazu oder in Scheiben drüber.",
    "makros": {
-    "kcal": 1380,
-    "protein": 89,
-    "fett": 40
+    "kcal": 1340,
+    "protein": 61,
+    "fett": 76
    }
   },
   {
    "id": "mittag-caesar",
-   "name": "Chicken-Caesar-Nudelsalat",
-   "kurz": "Caesar-Nudeln",
+   "name": "Chicken-Caesar mit Ofenkartoffeln",
+   "kurz": "Caesar-Kartoffeln",
    "typ": "salat",
    "portionen": 5,
    "zutaten": [
     [
-     "nudeln",
-     150
+     "kartoffeln",
+     550
+    ],
+    [
+     "oel",
+     10
     ],
     [
      "haehnchen",
@@ -247,10 +227,6 @@
      "haehnchen_gegart",
      150,
      1
-    ],
-    [
-     "oel",
-     5
     ],
     [
      "eier",
@@ -274,69 +250,53 @@
     ],
     [
      "caesar_dressing",
-     40
+     50
     ],
     [
      "gewuerze",
      0
     ]
    ],
-   "hinweis": "Farfalle kochen. Hähnchen braten, Speck knusprig auslassen. Eier hart kochen. Römersalat ganz lassen und erst morgens schneiden, Dressing separat.",
+   "hinweis": "Kartoffeln würfeln, mit Öl, Salz und Paprikapulver 30 min bei 220 °C rösten. Hähnchen braten, Speck knusprig auslassen. Eier hart kochen. Römersalat ganz lassen und erst morgens schneiden, Dressing separat.",
    "makros": {
-    "kcal": 1390,
-    "protein": 101,
-    "fett": 56
+    "kcal": 1360,
+    "protein": 94,
+    "fett": 63
    }
   },
   {
-   "id": "abend-schuettelpizza",
-   "name": "Schüttelpizza mit Schinken",
-   "kurz": "Schüttelpizza",
+   "id": "abend-pizza",
+   "name": "Pizza Salami mit Mozzarella",
+   "kurz": "Pizza",
    "typ": "abend",
    "portionen": 5,
    "zutaten": [
     [
-     "mehl",
-     100
-    ],
-    [
-     "eier",
-     2
-    ],
-    [
-     "milch",
-     100
+     "pizzateig",
+     200
     ],
     [
      "passierte_tomaten",
      80
     ],
     [
-     "kochschinken",
+     "mozzarella",
      125
     ],
     [
-     "mais",
-     50
-    ],
-    [
-     "paprika",
-     90
-    ],
-    [
-     "pizzakaese",
-     75
+     "salami",
+     60
     ],
     [
      "gewuerze",
      0
     ]
    ],
-   "hinweis": "Mehl, Eier, Milch, Salz und Oregano in einer Dose kräftig schütteln, auf ein Blech mit Backpapier gießen. Tomatensauce, Schinken, Mais, Paprika, Käse drauf. 200 °C, ca. 20 min.",
+   "hinweis": "Halbe Rolle Pizzateig (200 g) aufs Blech, Tomatensauce mit Salz und Oregano drauf, Salami und zerrupfter Mozzarella. 220 °C, ca. 12–15 min. Rest-Teig in der Folie zurück in den Kühlschrank, hält ungeöffnet bis zum Datum, angebrochen 2 Tage.",
    "makros": {
-    "kcal": 1030,
-    "protein": 73,
-    "fett": 40
+    "kcal": 1100,
+    "protein": 52,
+    "fett": 53
    }
   },
   {
@@ -391,7 +351,7 @@
     ],
     [
      "kochschinken",
-     100
+     150
     ],
     [
      "emmentaler",
@@ -399,7 +359,7 @@
     ],
     [
      "sahne",
-     40
+     30
     ],
     [
      "roestzwiebeln",
@@ -412,9 +372,9 @@
    ],
    "hinweis": "Spätzle und Schinken in der Pfanne anbraten, Sahne dazu, Käse unterheben und schmelzen lassen. Röstzwiebeln drüber.",
    "makros": {
-    "kcal": 1120,
-    "protein": 59,
-    "fett": 47
+    "kcal": 1150,
+    "protein": 68,
+    "fett": 46
    }
   },
   {
@@ -465,15 +425,14 @@
   {
    "woche": 1,
    "salat": "mittag-nudelsalat",
-   "abend": "abend-schuettelpizza",
-   "prep_minuten": 45,
+   "abend": "abend-pizza",
+   "prep_minuten": 35,
    "prep": [
-    "750 g Nudeln bissfest kochen, kalt abspülen. 5 Eier hart kochen.",
-    "800 g Hähnchen würfeln, mit Salz und Paprika in Öl braten, flach abkühlen lassen.",
+    "750 g Nudeln bissfest kochen, kalt abspülen. 10 Eier hart kochen.",
     "Dressing anrühren: Mayo, griechischer Joghurt, etwas Gurkenwasser, Salz, Pfeffer.",
-    "Gouda, Gewürzgurken, Paprika und Frühlingszwiebeln klein schneiden, Mais abtropfen.",
-    "Alles mischen und auf 5 Boxen verteilen. Hähnchen nur in 4 Boxen (Mo–Do), die Freitags-Box ohne Fleisch.",
-    "Freitagmorgen: Packung gegarte Hähnchenstreifen öffnen und in die letzte Box geben."
+    "Gouda und Gewürzgurken würfeln, Frühlingszwiebeln in Ringe, Mais abtropfen.",
+    "Alles mischen und auf 5 Boxen verteilen, je 2 Eier dazu.",
+    "Schinken bleibt in den 5 Packungen. Jeden Morgen eine Packung öffnen und über die Box geben, so hält alles bis Freitag."
    ]
   },
   {
@@ -491,27 +450,27 @@
   },
   {
    "woche": 3,
-   "salat": "mittag-texmex",
+   "salat": "mittag-kartoffelsalat",
    "abend": "abend-kaesespaetzle",
-   "prep_minuten": 40,
+   "prep_minuten": 50,
    "prep": [
-    "750 g Nudeln bissfest kochen, kalt abspülen.",
-    "800 g Hähnchen mit Taco-Gewürz in Öl braten, flach abkühlen lassen.",
-    "Bohnen und Mais abtropfen, Paprika würfeln. Mit Nudeln, Salsa, Schmand und Limettensaft mischen.",
-    "Auf 5 Boxen verteilen, Cheddar drüber. Hähnchen nur in 4 Boxen (Mo–Do). Chips in 5 kleine Beutel.",
-    "Freitagmorgen: gegarte Hähnchenstreifen aus der Packung in die letzte Box."
+    "2,75 kg Kartoffeln mit Schale ca. 20–25 min kochen. Parallel 15 Eier hart kochen.",
+    "Dressing: 300 ml heiße Brühe, 5 EL Essig, 75 g Öl, 2 TL Senf, 2 fein gewürfelte Zwiebeln, Salz, Pfeffer.",
+    "Kartoffeln pellen, warm in Scheiben schneiden, Dressing drüber, 30 min ziehen lassen.",
+    "Gewürzgurken würfeln, Frühlingszwiebeln in Ringe, unterheben. Abschmecken.",
+    "Auf 5 Boxen verteilen, je 3 Eier dazu. Würstchen bleiben in der Packung, jeden Morgen 4 Stück mitnehmen."
    ]
   },
   {
    "woche": 4,
    "salat": "mittag-caesar",
    "abend": "abend-quesadillas",
-   "prep_minuten": 40,
+   "prep_minuten": 50,
    "prep": [
-    "750 g Farfalle bissfest kochen, kalt abspülen. 10 Eier hart kochen.",
-    "800 g Hähnchen braten, Speck knusprig auslassen, beides flach abkühlen lassen.",
+    "2,75 kg Kartoffeln würfeln, mit Öl, Salz und Paprikapulver 30 min bei 220 °C rösten. 10 Eier hart kochen.",
+    "800 g Hähnchen braten, Speck knusprig auslassen, alles flach abkühlen lassen.",
     "Parmesan hobeln, Cocktailtomaten halbieren. Römersalat ganz lassen.",
-    "Nudeln, Tomaten, Eier und Parmesan auf 5 Boxen verteilen, Hähnchen nur in 4 Boxen (Mo–Do). Speck und Dressing in Extra-Döschen.",
+    "Kartoffeln, Tomaten, Eier und Parmesan auf 5 Boxen verteilen, Hähnchen nur in 4 Boxen (Mo–Do). Speck und Dressing in Extra-Döschen.",
     "Morgens: Salat schneiden und dazu. Freitag: gegarte Hähnchenstreifen aus der Packung."
    ]
   }
