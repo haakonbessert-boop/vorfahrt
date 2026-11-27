@@ -6,4 +6,5 @@ Läuft als PWA über GitHub Pages: Settings → Pages → Branch `main` / root. 
 
 - `data/rezepte.json`, `data/zutaten.json`: Rezepte und Nährwerte (`python3 data/make.py` rechnet die Makros neu)
 - `src/`: Vorlage, Service Worker, Icons
+- `python3 plan.py <ziel.md>` erzeugt den ausführlichen Ernährungsplan fürs Second Brain
 - `python3 build.py` baut `index.html`, `manifest.webmanifest`, `sw.js` und `icons/` ins Root
