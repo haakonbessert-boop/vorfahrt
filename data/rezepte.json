@@ -27,7 +27,7 @@
  },
  "salat_regeln": [
   "Nudeln, Kartoffeln und Hähnchen nach dem Kochen flach ausbreiten, abkühlen lassen und innerhalb von 2 Stunden in den Kühlschrank.",
-  "Hähnchen gibt es höchstens jede zweite Woche (Woche 2 und 4). Am Sonntag gebratenes Hähnchen hält bis Donnerstag, die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung.",
+  "Hähnchen gibt es höchstens jede zweite Woche (Woche 2 und 4, nur mittags). Am Sonntag gebratenes Hähnchen hält bis Donnerstag, die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung.",
   "Schinken und Würstchen bleiben bis zum Morgen in der Packung und kommen erst dann in die Box.",
   "Knuspriges (Speck) und Dressings in ein Extra-Döschen, erst beim Essen dazu."
  ],
@@ -378,46 +378,42 @@
    }
   },
   {
-   "id": "abend-quesadillas",
-   "name": "Hähnchen-Quesadillas",
-   "kurz": "Quesadillas",
+   "id": "abend-carbonara",
+   "name": "Spaghetti Carbonara mit Schinken",
+   "kurz": "Carbonara",
    "typ": "abend",
    "portionen": 5,
    "zutaten": [
     [
-     "wraps",
-     3
-    ],
-    [
-     "haehnchen_gegart",
+     "nudeln",
      150
     ],
     [
-     "cheddar",
-     60
+     "eier",
+     2
     ],
     [
-     "kidneybohnen",
-     80
+     "parmesan",
+     30
     ],
     [
-     "mais",
-     50
+     "kochschinken",
+     125
     ],
     [
-     "salsa",
-     50
+     "speck",
+     30
     ],
     [
      "gewuerze",
      0
     ]
    ],
-   "hinweis": "Wraps halbseitig mit Hähnchen, Bohnen, Mais und Cheddar belegen, zuklappen. In der Pfanne ohne Öl je Seite 2–3 min knusprig braten. Salsa zum Dippen.",
+   "hinweis": "Ein Topf, eine Pfanne, ca. 15 min: Spaghetti kochen. Speck und Schinken in der Pfanne anbraten. 2 Eier mit dem geriebenen Parmesan und Pfeffer verquirlen. Nudeln abgießen (eine Tasse Nudelwasser aufheben), in die Pfanne, Herd aus, Ei-Käse-Mischung unterrühren, mit etwas Nudelwasser cremig machen.",
    "makros": {
-    "kcal": 1110,
+    "kcal": 1040,
     "protein": 71,
-    "fett": 38
+    "fett": 34
    }
   }
  ],
@@ -464,7 +460,7 @@
   {
    "woche": 4,
    "salat": "mittag-caesar",
-   "abend": "abend-quesadillas",
+   "abend": "abend-carbonara",
    "prep_minuten": 50,
    "prep": [
     "2,75 kg Kartoffeln würfeln, mit Öl, Salz und Paprikapulver 30 min bei 220 °C rösten. 10 Eier hart kochen.",

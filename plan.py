@@ -38,7 +38,7 @@ aktualisiert: 2026-11-27
 **Zwei Mahlzeiten, kein Frühstück, kein Snack.** Alle Kalorien und das ganze Protein kommen aus Mittag und Abendessen. Darum sind beide Portionen bewusst groß, mittags die Hauptmahlzeit.
 
 **Ihre Regeln (Stand 27.11.):**
-- Hähnchen höchstens jede zweite Woche (Woche 2 und 4). Sonst Schinken, Würstchen, Salami, Ei, Käse.
+- Hähnchen höchstens jede zweite Woche (Woche 2 und 4, nur mittags). Sonst Schinken, Würstchen, Salami, Ei, Käse.
 - Nicht nur Nudeln: 2 Wochen Nudeln, 2 Wochen Kartoffeln.
 - Lieblinge: Tortellini-Pfanne (All-Time-Favorite) und Pesto-Pasta-Salat.
 - Mag sie nicht: Paprika (als Gemüse, Paprikapulver ist ok), Fisch, Reis, Brot, Bulgur, Brokkoli, Spinat, Erbsen, Curry, Teriyaki, Erdnuss, Shakshuka, Halloumi aus der Pfanne, Magerquark. Gnocchi gerade nicht, Feta nur sparsam.
@@ -49,7 +49,7 @@ Die App **Prep Box** zeigt dieselben Daten mit Einkaufsliste zum Abhaken: https:
 
 - **Samstag:** Einkauf für die ganze Woche (Mo–Fr).
 - **Sonntag:** einmal kochen, 5 Mittags-Boxen für Mo–Fr (ca. 35–50 min).
-- **Montag bis Freitag:** mittags die Box kalt aus dem Kühlschrank, abends das Abendessen der Woche frisch in max. 15 min (Pfanne oder Ofen, keine Mikrowelle).
+- **Montag bis Freitag:** mittags die Box kalt aus dem Kühlschrank, abends das Abendessen der Woche frisch in max. 15–20 min, alles unter einer halben Stunde (Pfanne oder Ofen, keine Mikrowelle).
 - **Wochenende:** nicht Teil des Plans.
 
 **Kein Tiefkühler.** Darum gilt:

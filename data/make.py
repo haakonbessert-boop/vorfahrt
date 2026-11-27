@@ -30,7 +30,7 @@ ZUT = {
  "sahne": Z("Schlagsahne", K, "× 200 ml", 200, 290, 2.4, 30),
  "tortellini": Z("Tortellini mit Käse (Kühlregal)", K, "× 250 g", 250, 280, 11, 7),
  "spaetzle": Z("Spätzle (Kühlregal)", K, "× 500 g", 500, 165, 6, 2),
- "nudeln": Z("Nudeln (Spirelli, Fusilli, Farfalle)", T, "× 500 g", 500, 355, 12, 1.5, haltbar=True),
+ "nudeln": Z("Nudeln (Spirelli, Fusilli, Spaghetti)", T, "× 500 g", 500, 355, 12, 1.5, haltbar=True),
  "wraps": Z("Weizen-Wraps", T, "Pck. à 6", 6, 185, 5, 4.5, basis="Stück", stueck=True),
  "mais": Z("Mais (Dose)", T, "Dose", 285, 80, 2.5, 1.2),
  "kidneybohnen": Z("Kidneybohnen (Dose)", T, "Dose", 250, 108, 7.5, 0.6),
