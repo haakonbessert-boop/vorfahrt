@@ -3,7 +3,7 @@
 # Rezepte ändern: data/rezepte.json bzw. data/zutaten.json (über data/make.py), dann python3 build.py.
 import json, pathlib, shutil
 root = pathlib.Path(__file__).parent
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 # rezepte.json bringt unter "ui" Texte, App-Namen und Speicher-Präfix mit.
 def build(data, dist):

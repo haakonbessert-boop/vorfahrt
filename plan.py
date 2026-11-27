@@ -38,7 +38,7 @@ aktualisiert: 2026-11-27
 **Zwei Mahlzeiten, kein Frühstück, kein Snack.** Alle Kalorien und das ganze Protein kommen aus Mittag und Abendessen. Darum sind beide Portionen bewusst groß, mittags die Hauptmahlzeit.
 
 **Ihre Regeln (Stand 27.11.):**
-- Hähnchen höchstens jede zweite Woche (Woche 2 und 4, nur mittags). Sonst Schinken, Würstchen, Salami, Ei, Käse.
+- Hähnchen höchstens jede zweite Woche (Woche 1 und 3, nur mittags). Sonst Schinken, Würstchen, Salami, Ei, Käse.
 - Nicht nur Nudeln: 2 Wochen Nudeln, 2 Wochen Kartoffeln.
 - Lieblinge: Tortellini-Pfanne (All-Time-Favorite) und Pesto-Pasta-Salat.
 - Mag sie nicht: Paprika (als Gemüse, Paprikapulver ist ok), Fisch, Reis, Brot, Bulgur, Brokkoli, Spinat, Erbsen, Curry, Teriyaki, Erdnuss, Shakshuka, Halloumi aus der Pfanne, Magerquark. Gnocchi gerade nicht, Feta nur sparsam.

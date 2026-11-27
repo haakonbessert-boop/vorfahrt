@@ -27,7 +27,7 @@
  },
  "salat_regeln": [
   "Nudeln, Kartoffeln und Hähnchen nach dem Kochen flach ausbreiten, abkühlen lassen und innerhalb von 2 Stunden in den Kühlschrank.",
-  "Hähnchen gibt es höchstens jede zweite Woche (Woche 2 und 4, nur mittags). Am Sonntag gebratenes Hähnchen hält bis Donnerstag, die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung.",
+  "Hähnchen gibt es höchstens jede zweite Woche (Woche 1 und 3, nur mittags). Am Sonntag gebratenes Hähnchen hält bis Donnerstag, die Freitags-Box bekommt gegarte Hähnchenstreifen aus der Vakuumpackung.",
   "Schinken und Würstchen bleiben bis zum Morgen in der Packung und kommen erst dann in die Box.",
   "Knuspriges (Speck) und Dressings in ein Extra-Döschen, erst beim Essen dazu."
  ],
@@ -250,7 +250,7 @@
     ],
     [
      "caesar_dressing",
-     50
+     45
     ],
     [
      "gewuerze",
@@ -259,9 +259,9 @@
    ],
    "hinweis": "Kartoffeln würfeln, mit Öl, Salz und Paprikapulver 30 min bei 220 °C rösten. Hähnchen braten, Speck knusprig auslassen. Eier hart kochen. Römersalat ganz lassen und erst morgens schneiden, Dressing separat.",
    "makros": {
-    "kcal": 1360,
+    "kcal": 1340,
     "protein": 94,
-    "fett": 63
+    "fett": 61
    }
   },
   {
@@ -386,7 +386,7 @@
    "zutaten": [
     [
      "nudeln",
-     150
+     160
     ],
     [
      "eier",
@@ -411,28 +411,15 @@
    ],
    "hinweis": "Ein Topf, eine Pfanne, ca. 15 min: Spaghetti kochen. Speck und Schinken in der Pfanne anbraten. 2 Eier mit dem geriebenen Parmesan und Pfeffer verquirlen. Nudeln abgießen (eine Tasse Nudelwasser aufheben), in die Pfanne, Herd aus, Ei-Käse-Mischung unterrühren, mit etwas Nudelwasser cremig machen.",
    "makros": {
-    "kcal": 1040,
-    "protein": 71,
-    "fett": 34
+    "kcal": 1080,
+    "protein": 72,
+    "fett": 35
    }
   }
  ],
  "rotation": [
   {
    "woche": 1,
-   "salat": "mittag-nudelsalat",
-   "abend": "abend-pizza",
-   "prep_minuten": 35,
-   "prep": [
-    "750 g Nudeln bissfest kochen, kalt abspülen. 10 Eier hart kochen.",
-    "Dressing anrühren: Mayo, griechischer Joghurt, etwas Gurkenwasser, Salz, Pfeffer.",
-    "Gouda und Gewürzgurken würfeln, Frühlingszwiebeln in Ringe, Mais abtropfen.",
-    "Alles mischen und auf 5 Boxen verteilen, je 2 Eier dazu.",
-    "Schinken bleibt in den 5 Packungen. Jeden Morgen eine Packung öffnen und über die Box geben, so hält alles bis Freitag."
-   ]
-  },
-  {
-   "woche": 2,
    "salat": "mittag-pesto",
    "abend": "abend-tortellini",
    "prep_minuten": 40,
@@ -445,22 +432,22 @@
    ]
   },
   {
-   "woche": 3,
-   "salat": "mittag-kartoffelsalat",
-   "abend": "abend-kaesespaetzle",
-   "prep_minuten": 50,
+   "woche": 2,
+   "salat": "mittag-nudelsalat",
+   "abend": "abend-pizza",
+   "prep_minuten": 35,
    "prep": [
-    "2,75 kg Kartoffeln mit Schale ca. 20–25 min kochen. Parallel 15 Eier hart kochen.",
-    "Dressing: 300 ml heiße Brühe, 5 EL Essig, 75 g Öl, 2 TL Senf, 2 fein gewürfelte Zwiebeln, Salz, Pfeffer.",
-    "Kartoffeln pellen, warm in Scheiben schneiden, Dressing drüber, 30 min ziehen lassen.",
-    "Gewürzgurken würfeln, Frühlingszwiebeln in Ringe, unterheben. Abschmecken.",
-    "Auf 5 Boxen verteilen, je 3 Eier dazu. Würstchen bleiben in der Packung, jeden Morgen 4 Stück mitnehmen."
+    "750 g Nudeln bissfest kochen, kalt abspülen. 10 Eier hart kochen.",
+    "Dressing anrühren: Mayo, griechischer Joghurt, etwas Gurkenwasser, Salz, Pfeffer.",
+    "Gouda und Gewürzgurken würfeln, Frühlingszwiebeln in Ringe, Mais abtropfen.",
+    "Alles mischen und auf 5 Boxen verteilen, je 2 Eier dazu.",
+    "Schinken bleibt in den 5 Packungen. Jeden Morgen eine Packung öffnen und über die Box geben, so hält alles bis Freitag."
    ]
   },
   {
-   "woche": 4,
+   "woche": 3,
    "salat": "mittag-caesar",
-   "abend": "abend-carbonara",
+   "abend": "abend-kaesespaetzle",
    "prep_minuten": 50,
    "prep": [
     "2,75 kg Kartoffeln würfeln, mit Öl, Salz und Paprikapulver 30 min bei 220 °C rösten. 10 Eier hart kochen.",
@@ -468,6 +455,19 @@
     "Parmesan hobeln, Cocktailtomaten halbieren. Römersalat ganz lassen.",
     "Kartoffeln, Tomaten, Eier und Parmesan auf 5 Boxen verteilen, Hähnchen nur in 4 Boxen (Mo–Do). Speck und Dressing in Extra-Döschen.",
     "Morgens: Salat schneiden und dazu. Freitag: gegarte Hähnchenstreifen aus der Packung."
+   ]
+  },
+  {
+   "woche": 4,
+   "salat": "mittag-kartoffelsalat",
+   "abend": "abend-carbonara",
+   "prep_minuten": 50,
+   "prep": [
+    "2,75 kg Kartoffeln mit Schale ca. 20–25 min kochen. Parallel 15 Eier hart kochen.",
+    "Dressing: 300 ml heiße Brühe, 5 EL Essig, 75 g Öl, 2 TL Senf, 2 fein gewürfelte Zwiebeln, Salz, Pfeffer.",
+    "Kartoffeln pellen, warm in Scheiben schneiden, Dressing drüber, 30 min ziehen lassen.",
+    "Gewürzgurken würfeln, Frühlingszwiebeln in Ringe, unterheben. Abschmecken.",
+    "Auf 5 Boxen verteilen, je 3 Eier dazu. Würstchen bleiben in der Packung, jeden Morgen 4 Stück mitnehmen."
    ]
   }
  ]
