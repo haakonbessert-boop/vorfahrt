@@ -1,6 +1,6 @@
 // Offline-Modus (nur eigene Caches löschen, beide Apps liegen auf derselben Domain): App-Dateien beim Installieren speichern, Schriften beim ersten Laden.
 const PREFIX = "prep-box-v";
-const CACHE = PREFIX + "1.1.0";
+const CACHE = PREFIX + "1.2.0";
 const FILES = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
